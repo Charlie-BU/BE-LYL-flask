@@ -493,7 +493,7 @@ class Post(db.Model):
             "content": self.content,
             "poster_id": self.poster_id,
             "poster_realname": self.poster.realname if self.poster else None,
-            "poster_mobile": self.poster.mobile if self.poster else None,
+            "poster_nickname": self.poster.nickname if self.poster else None,
             "poster_pic": self.poster.head_pic if self.poster else None,
             "likes": self.likes,
             "stars": self.stars,

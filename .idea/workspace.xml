@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="chore">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bluePrints/application.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/application.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,7 +206,7 @@
       <workItem from="1731574359687" duration="8000" />
       <workItem from="1731577047964" duration="41000" />
       <workItem from="1731585713839" duration="633000" />
-      <workItem from="1731741939881" duration="4945000" />
+      <workItem from="1731741939881" duration="5667000" />
     </task>
     <task id="LOCAL-00001" summary="chore">
       <option name="closed" value="true" />
@@ -219,7 +216,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728977370149</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="chore">
+      <option name="closed" value="true" />
+      <created>1731755616550</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1731755616550</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
