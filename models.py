@@ -498,6 +498,7 @@ class Post(db.Model):
             "likes": self.likes,
             "stars": self.stars,
             "time": self.time,
+            "comment_length": len(self.comments) if self.comments else 0,
         }
         if self.images:
             image_data = self.images[0]
@@ -533,14 +534,6 @@ class Post_image(db.Model):
     image8 = db.Column(db.Text, nullable=True)
     image9 = db.Column(db.Text, nullable=True)
     length = db.Column(db.Integer, nullable=True)
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "post_id": self.post_id,
-            "images": [self.image1, self.image2, self.image3, self.image4, self.image5, self.image6, self.image7, self.image8, self.image9],
-            "length": self.length
-        }
 
 
 class Post_comment(db.Model):
