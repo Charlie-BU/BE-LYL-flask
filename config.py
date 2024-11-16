@@ -1,9 +1,10 @@
+test = True
 # 数据库配置
 USERNAME = "Charlie"
 PASSWORD = "liyilian666"
 HOSTNAME = "101.132.24.99"
 PORT = 3306
-DATABASE = "liyilian"
+DATABASE = "liyilian-test" if test else "liyilian"
 DB_URI = f'mysql+pymysql://{USERNAME}:{PASSWORD}@{HOSTNAME}:{PORT}/{DATABASE}?charset=utf8mb4'
 SQLALCHEMY_DATABASE_URI = DB_URI
 
