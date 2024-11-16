@@ -30,6 +30,16 @@ def get_all_posts():
         "status": 200,
     })
 
+@bp.route('/get_special_post', methods=['POST'])
+def get_special_post():
+    post_id = request.json['id']
+    post = Post.query.get(post_id)
+    return jsonify({
+        "post": Post.to_json(post),
+        "message": "success",
+        "status": 200,
+    })
+
 @bp.route('/like_post', methods=['POST'])
 def like_post():
 
