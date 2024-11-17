@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from pandas.io.json import to_json
 
 from models import *
 
@@ -66,6 +67,19 @@ def send_comment():
     db.session.add(new_comment)
     db.session.commit()
     return jsonify({
+        "message": "success",
+        "status": 200,
+    })
+
+
+@bp.route('/get_all_post_comments', methods=['POST'])
+def get_all_post_comments():
+    data = request.json
+    post_id = data['post_id']
+    post_comments = Post_comment.query.filter_by(post_id=post_id).order_by(Post_comment.time.desc()).all()
+    post_comments = [Post_comment.to_json(comment) for comment in post_comments]
+    return jsonify({
+        "post_comments": post_comments,
         "message": "success",
         "status": 200,
     })
