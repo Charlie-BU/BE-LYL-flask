@@ -541,6 +541,7 @@ class Post_comment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     content = db.Column(db.Text, nullable=False)
     time = db.Column(db.DateTime, default=datetime.now)
+    likes = db.Column(db.Integer, nullable=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
     sender = db.relationship('TpUser', backref="comments")
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
@@ -553,6 +554,9 @@ class Post_comment(db.Model):
             "time": self.time,
             "sender_id": self.sender_id,
             "sender_realname": self.sender.realname if self.sender else None,
+            "sender_nickname": self.sender.nickname if self.sender else None,
+            "sender_pic": self.sender.head_pic if self.sender else None,
+            "likes": self.likes,
             "post_id": self.post_id
         }
 
