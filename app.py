@@ -1,8 +1,8 @@
 from flask import Flask, request, redirect, url_for, session, g, render_template, jsonify
 from sqlalchemy.testing.pickleable import User
-
 from exts import db, mail
 import config, datetime
+from config import *
 from models import *
 from bluePrints.user import bp as user_bp
 from bluePrints.application import bp as application_bp
@@ -20,9 +20,6 @@ app.register_blueprint(application_bp)
 # 绑定数据库
 db.init_app(app)
 migrate = Migrate(app, db)
-# 添加数据库表
-# with app.app_context():
-#     db.create_all()
 # 发送邮件初始化
 mail.init_app(app)
 

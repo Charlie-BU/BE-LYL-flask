@@ -28,3 +28,10 @@ MCH_ID = ''                                   # 商户号
 NOTIFY_URL = ''     # 通知地址
 MERCHANT_KEY = ''       # 商户KEY
 # TRADE_TYPE = 'JSAPI'                                    # 交易类型
+
+
+# 阿里云OSS配置
+OSS_ACCESS_KEY_ID = 'LTAI5tRmNY2Aa1MZb1PK49Hg'
+OSS_ACCESS_KEY_SECRET = 'd4GH1DVJKhEX4ZXY5lEVNEFP31sn3z'
+OSS_BUCKET_NAME = 'liyilian'
+OSS_ENDPOINT = 'oss-cn-hangzhou.aliyuncs.com'       # 不能带liyilian.*
