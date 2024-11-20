@@ -21,7 +21,7 @@ MAIL_DEFAULT_SENDER = ""
 
 # 小程序配置
 APPID = "wx89661193f664f803"
-APPSECRET = ""
+APPSECRET = "69fd5a49894dc45b242f48a2ea3afc4f"
 
 # 微信支付配置
 MCH_ID = ''                                   # 商户号

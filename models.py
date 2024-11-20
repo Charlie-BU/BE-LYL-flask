@@ -579,3 +579,11 @@ class Post_comment_reply(db.Model):
             "sender_realname": self.sender.realname if self.sender else None,
             "comment_id": self.comment_id
         }
+
+
+class AccessToken(db.Model):
+    __tablename__ = 'access_token'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    access_token = db.Column(db.String(200), nullable=False)
+    update_time = db.Column(db.DateTime, default=datetime.now)
+    expires_in = db.Column(db.Integer, nullable=False)
