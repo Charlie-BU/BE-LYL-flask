@@ -1,7 +1,5 @@
 import base64
-
 from flask import Blueprint, request, jsonify
-
 from hooks import *
 from models import TpUser
 
