@@ -483,7 +483,7 @@ class Post(db.Model):
     poster_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
     poster = db.relationship('TpUser', backref="posts")
     likes = db.Column(db.Integer, nullable=True)
-    stars = db.Column(db.Integer, nullable=True)
+    starred = db.Column(db.Integer, nullable=True)
     time = db.Column(db.DateTime, default=datetime.now)
     def to_json(self):
         data = {
@@ -495,7 +495,7 @@ class Post(db.Model):
             "poster_nickname": self.poster.nickname if self.poster else None,
             "poster_pic": self.poster.head_pic if self.poster else None,
             "likes": self.likes,
-            "stars": self.stars,
+            "starred": self.starred,
             "time": self.time,
             "comment_length": len(self.comments) if self.comments else 0,
         }
@@ -577,7 +577,10 @@ class Post_comment_reply(db.Model):
             "time": self.time,
             "sender_id": self.sender_id,
             "sender_realname": self.sender.realname if self.sender else None,
-            "comment_id": self.comment_id
+            "sender_nickname": self.sender.nickname if self.sender else None,
+            "sender_pic": self.sender.head_pic if self.sender else None,
+            "comment_id": self.comment_id,
+            "comment_sender": self.comment.sender.realname if self.comment.sender.realname else self.comment.sender.nickname if self.comment.sender.nickname else None,
         }
 
 
