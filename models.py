@@ -485,6 +485,7 @@ class Post(db.Model):
     likes = db.Column(db.Integer, nullable=True)
     starred = db.Column(db.Integer, nullable=True)
     time = db.Column(db.DateTime, default=datetime.now)
+    comment_length = db.Column(db.Integer, nullable=True)
     def to_json(self):
         data = {
             "id": self.id,
@@ -497,7 +498,7 @@ class Post(db.Model):
             "likes": self.likes,
             "starred": self.starred,
             "time": self.time,
-            "comment_length": len(self.comments) if self.comments else 0,
+            "comment_length": self.comment_length,
         }
         if self.images:
             image_data = self.images[0]
