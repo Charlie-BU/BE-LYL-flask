@@ -10,17 +10,6 @@ auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
 bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 
 
-@bp.route('/test', methods=['GET'])
-def test():
-    posts = Post.query.all()
-    posts = [Post.to_json(post) for post in posts]
-    return jsonify({
-        "posts": posts,
-        "message": "success",
-        "status": 200,
-    })
-
-
 @bp.route('/get_all_posts', methods=['POST'])
 def get_all_posts():
     posts = Post.query.order_by(
@@ -78,8 +67,12 @@ def get_post_comments_and_replies():
         Post_comment_reply.time.desc()).all()
     replies = [Post_comment_reply.to_json(reply) for reply in replies]
     comments_and_replies = sorted(comments + replies, key=lambda ele: ele['time'], reverse=True)
+    post = Post.query.get(data['post_id'])
+    post.comment_length = len(comments_and_replies)
+    db.session.commit()
     return jsonify({
         "comments": comments_and_replies,
+        "comment_length": len(comments_and_replies),
         "message": "success",
         "status": 200,
     })
@@ -88,7 +81,7 @@ def get_post_comments_and_replies():
 @bp.route('/send_comment', methods=['POST'])
 def send_comment():
     data = request.json
-    new_comment = Post_comment(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'], likes=0)
+    new_comment = Post_comment(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'], likes=0, comment_length=0)
     db.session.add(new_comment)
     db.session.commit()
     return jsonify({
