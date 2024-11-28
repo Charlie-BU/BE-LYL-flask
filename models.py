@@ -172,7 +172,6 @@ class TpInvoice(db.Model):
 
 class TpItem(db.Model):
     __tablename__ = 'tp_items'
-
     id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(db.Integer, server_default=db.FetchedValue())
     type = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
@@ -210,6 +209,20 @@ class TpItemsChat(db.Model):
     to_id = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
     add_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer)
+    def to_json(self):
+        user = TpUser.query.get(self.user_id)
+        data = {
+            "id": self.id,
+            "item_id": self.item_id,
+            "type": self.type,
+            "user_id": self.user_id,
+            "to_id": self.to_id,
+            "add_time": self.add_time,
+            "update_time": self.update_time,
+            "elite_name": user.realname if user.realname else user.nickname,
+            "elite_star": user.star_as_elite if user.star_as_elite else 0,
+        }
+        return data
 
 
 class TpItemsCollect(db.Model):
@@ -414,6 +427,8 @@ class TpUser(db.Model):
     user_token = db.Column(db.String(50), nullable=False)
     kf_img = db.Column(db.String(255), nullable=False)
     kf_show = db.Column(db.Integer, nullable=False)
+    star_as_elite = db.Column(db.Float, nullable=True, default=0)
+    star_as_business = db.Column(db.Float, nullable=True, default=0)
 
 
 class TpVoucher(db.Model):

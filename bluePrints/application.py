@@ -12,6 +12,17 @@ bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 
 @bp.route('/get_all_posts', methods=['POST'])
 def get_all_posts():
+    posts = Post.query.order_by(Post.time.desc()).all()
+    posts = [Post.to_json(post) for post in posts]
+    return jsonify({
+        "posts": posts,
+        "message": "success",
+        "status": 200,
+    })
+
+
+@bp.route('/get_all_posts_with_star', methods=['POST'])
+def get_all_posts_with_star():
     posts = Post.query.order_by(
         case((Post.starred, 0), else_=1),  # 如果 starred 为 True，则值为 0，否则为 1
         Post.time.desc()
@@ -81,7 +92,8 @@ def get_post_comments_and_replies():
 @bp.route('/send_comment', methods=['POST'])
 def send_comment():
     data = request.json
-    new_comment = Post_comment(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'], likes=0, comment_length=0)
+    new_comment = Post_comment(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'], likes=0,
+                               comment_length=0)
     db.session.add(new_comment)
     db.session.commit()
     return jsonify({
@@ -301,3 +313,16 @@ def send_post():
 #         "message": "success",
 #         "status": 200,
 #     })
+
+
+# 获取项目的沟通列表
+@bp.route('/get_all_item_chats', methods=['POST'])
+def get_all_item_chats():
+    item_id = request.json["item_id"]
+    all_chats = TpItemsChat.query.filter_by(item_id=item_id).order_by(TpItemsChat.update_time.desc()).all()
+    all_chats = [TpItemsChat.to_json(all_chat) for all_chat in all_chats]
+    return jsonify({
+        "all_chats": all_chats,
+        "message": "success",
+        "status": 200,
+    })

@@ -9,7 +9,6 @@ from bluePrints.application import bp as application_bp
 from flask_migrate import Migrate
 from flask_cors import CORS
 
-
 app = Flask(__name__)
 CORS(app)
 # 加载配置
@@ -27,6 +26,11 @@ mail.init_app(app)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+
+@app.route('/test')
+def test():
+    return "success"
 
 
 # 请求前检查是否有用户登录

@@ -26,8 +26,9 @@ def get_access_token():
 # 发送对应模板的微信通知
 def inform(user_id, template_id, data):
     url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + get_access_token()
+    receiver_openid = TpUser.query.get(user_id).openid
     data_post = {
-        "touser": TpUser.query.get(user_id).openid,
+        "touser": receiver_openid,
         "template_id": template_id,
         "lang": 'zh_CN',
         "miniprogramState": 'formal',
