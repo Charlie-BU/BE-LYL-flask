@@ -1,5 +1,7 @@
 import base64
 from flask import Blueprint, request, jsonify
+from sqlalchemy import and_, or_
+
 from hooks import *
 from models import TpUser
 
@@ -64,7 +66,6 @@ def send_notification(description='新消息通知'):
     data_request = request.json
     sender_id = data_request['my_id']
     receiver_id = data_request['receiver_id']
-    timestamp = data_request['timestamp']
     template_id = "8AMX7lHwjpeH4uN-6XslAmSDJhcbbsJcB_RLdIcQZ4o"
     sender = TpUser.query.get(sender_id)
     data = {
@@ -90,3 +91,19 @@ def send_notification(description='新消息通知'):
         "status": -1,
         "res_status": res,
     })
+
+
+# 计算用户个人评分（简历完成度 + 客户满意度）
+def calc_star_as_elite(user_id):
+    user = TpUser.query.get(user_id)
+    # 取到该用户的简历
+    resume = TpItem.query.filter(and_(TpItem.user_id == user_id, TpItem.type == 2)).first()
+    resume_score = 0
+    if resume:
+        resume_score = 20
+        index = ['talents', 'strength', 'experience']
+        for key in index:
+            if getattr(resume, key, None):  # 如果resume中的字段有key不为None，若无key，则返回None
+                resume_score += 20
+    print(resume_score)
+
