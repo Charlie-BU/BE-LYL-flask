@@ -258,7 +258,7 @@ def upload_image_to_OSS():
 @bp.route('/send_post', methods=['POST'])
 def send_post():
     data = request.json
-    new_post = Post(title=data['title'], content=data['content'], poster_id=data['my_id'], likes=0, starred=0)
+    new_post = Post(title=data['title'], content=data['content'], poster_id=data['my_id'], likes=0, starred=0, comment_length=0)
     db.session.add(new_post)
     db.session.commit()
     this_post_id = Post.query.filter_by(content=data['content']).first().id
