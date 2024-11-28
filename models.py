@@ -500,7 +500,7 @@ class Post(db.Model):
     likes = db.Column(db.Integer, nullable=True)
     starred = db.Column(db.Integer, nullable=True)
     time = db.Column(db.DateTime, default=datetime.now)
-    comment_length = db.Column(db.Integer, nullable=True)
+    comment_length = db.Column(db.Integer, nullable=True, default=0)
     def to_json(self):
         data = {
             "id": self.id,
