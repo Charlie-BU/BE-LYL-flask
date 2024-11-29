@@ -1,4 +1,4 @@
-test = False
+test = True
 # 数据库配置
 USERNAME = "Charlie"
 PASSWORD = "liyilian666"

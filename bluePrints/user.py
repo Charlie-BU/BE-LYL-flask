@@ -94,16 +94,38 @@ def send_notification(description='新消息通知'):
 
 
 # 计算用户个人评分（简历完成度 + 客户满意度）
-def calc_star_as_elite(user_id):
+# TODO：确定比例
+@bp.route('/calc_star_as_elite', methods=['POST'])
+def calc_star_as_elite():
+    user_id = request.json['user_id']
     user = TpUser.query.get(user_id)
-    # 取到该用户的简历
+    # 拿到该用户的简历
     resume = TpItem.query.filter(and_(TpItem.user_id == user_id, TpItem.type == 2)).first()
     resume_score = 0
-    if resume:
-        resume_score = 20
+    # 有简历：25分；三个指标：每个25分
+    if resume and (resume.status in [1, 3]):
+        resume_score = 25
         index = ['talents', 'strength', 'experience']
         for key in index:
-            if getattr(resume, key, None):  # 如果resume中的字段有key不为None，若无key，则返回None
-                resume_score += 20
-    print(resume_score)
+            if getattr(resume, key, None):  # 如果resume中的字段有key不为None；若无key，则返回None
+                resume_score += 25
+    overall_score = resume_score / 100 * 100
+    user.star_as_elite = overall_score
+    db.session.commit()
+    return jsonify({
+        "message": "success",
+        "status": 200,
+    })
 
+
+@bp.route('/get_user_star', methods=['POST'])
+def get_user_star():
+    user = TpUser.query.get(request.json['user_id'])
+    star_as_elite = user.star_as_elite if user.star_as_elite else 0
+    star_as_business = user.star_as_business if user.star_as_business else 0
+    return jsonify({
+        "star_as_elite": star_as_elite,
+        "star_as_business": star_as_business,
+        "message": "success",
+        "status": 200,
+    })
