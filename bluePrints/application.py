@@ -92,8 +92,7 @@ def get_post_comments_and_replies():
 @bp.route('/send_comment', methods=['POST'])
 def send_comment():
     data = request.json
-    new_comment = Post_comment(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'], likes=0,
-                               comment_length=0)
+    new_comment = Post_comment(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'], likes=0)
     db.session.add(new_comment)
     db.session.commit()
     return jsonify({
