@@ -141,11 +141,6 @@ def delete_post():
     data = request.json
     post_id = data['post_id']
     post = Post.query.get(post_id)
-    if post.poster_id != data["my_id"]:
-        return jsonify({
-            "message": "fail: unauthorized",
-            "status": -1,
-        })
     post_images = Post_image.query.filter_by(post_id=post_id).all()
     prefix = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/'
     for post_image in post_images:
@@ -170,11 +165,6 @@ def delete_post():
 def delete_comment():
     data = request.json
     comment = Post_comment.query.get(data['comment_id'])
-    if comment.sender_id != data["my_id"]:
-        return jsonify({
-            "message": "fail: unauthorized",
-            "status": -1,
-        })
     Post_comment_reply.query.filter_by(comment_id=data['comment_id']).delete()
     db.session.delete(comment)
     db.session.commit()
