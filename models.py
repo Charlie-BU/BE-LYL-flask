@@ -519,7 +519,7 @@ class Post(db.Model):
             image_data = self.images[0]
             if image_data:
                 post_image = {
-                    "length": image_data.length,
+                    "image_length": image_data.length,
                     "image1": image_data.image1,
                     "image2": image_data.image2,
                     "image3": image_data.image3,
