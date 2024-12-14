@@ -198,6 +198,39 @@ class TpItem(db.Model):
     add_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer)
 
+class ItemFiles(db.Model):
+    __tablename__ = 'item_files'
+    # 必须和item id保持一致
+    id = db.Column(db.BigInteger, primary_key=True)
+    # 必须和item type保持一致
+    type = db.Column(db.Integer, nullable=True)
+    file1 = db.Column(db.Text, nullable=True)
+    file2 = db.Column(db.Text, nullable=True)
+    file3 = db.Column(db.Text, nullable=True)
+    file4 = db.Column(db.Text, nullable=True)
+    file5 = db.Column(db.Text, nullable=True)
+    file6 = db.Column(db.Text, nullable=True)
+    file7 = db.Column(db.Text, nullable=True)
+    file8 = db.Column(db.Text, nullable=True)
+    file9 = db.Column(db.Text, nullable=True)
+    length = db.Column(db.Integer, nullable=True)
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "type": self.type,
+            "file1": self.file1,
+            "file2": self.file2,
+            "file3": self.file3,
+            "file4": self.file4,
+            "file5": self.file5,
+            "file6": self.file6,
+            "file7": self.file7,
+            "file8": self.file8,
+            "file9": self.file9,
+            "length": self.length,
+        }
+        return data
+
 
 class TpItemsChat(db.Model):
     __tablename__ = 'tp_items_chat'
@@ -209,6 +242,7 @@ class TpItemsChat(db.Model):
     to_id = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
     add_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer)
+
     def to_json(self):
         user = TpUser.query.get(self.user_id)
         data = {
@@ -313,7 +347,8 @@ class TpSmsLog(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     mobile = db.Column(db.String(11), server_default=db.FetchedValue())
     code = db.Column(db.String(10), server_default=db.FetchedValue())
-    scene = db.Column(db.Integer, server_default=db.FetchedValue(), info='发送场景1:修改银行卡信息 2:注册 3:找回密码 4:修改密码 5提现 6转赠 7修改交易密码')
+    scene = db.Column(db.Integer, server_default=db.FetchedValue(),
+                      info='发送场景1:修改银行卡信息 2:注册 3:找回密码 4:修改密码 5提现 6转赠 7修改交易密码')
     is_use = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
     add_time = db.Column(db.Integer, server_default=db.FetchedValue())
 
@@ -501,6 +536,7 @@ class Post(db.Model):
     starred = db.Column(db.Integer, nullable=True)
     time = db.Column(db.DateTime, default=datetime.now)
     comment_length = db.Column(db.Integer, nullable=True, default=0)
+
     def to_json(self):
         data = {
             "id": self.id,
