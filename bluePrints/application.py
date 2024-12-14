@@ -266,7 +266,7 @@ def send_post():
         "status": 200,
     })
 
-# # 支持多图片上传（可选）
+# # 多图片上传（不要这样）
 # @bp.route('/upload_multiple_images_to_OSS', methods=['POST'])
 # def upload_multiple_images_to_OSS():
 #     if 'images' not in request.files:
