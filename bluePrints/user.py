@@ -138,7 +138,7 @@ def get_user_star():
 
 @bp.route('/upload_works_to_OSS', methods=['POST'])
 def upload_works_to_OSS():
-    if 'this_one' not in request.files:
+    if not request.files.get('this_one'):
         return jsonify({
             "message": "fail: no works",
             "status": -1,
@@ -151,7 +151,7 @@ def upload_works_to_OSS():
     this_one.save(temp_path)
     try:
         # 上传到OSS
-        oss_path = f'user\'s-works/{this_one.filename}'  # 阿里云目录路径
+        oss_path = f'user_works/{this_one.filename}'  # 阿里云目录路径
         with open(temp_path, 'rb') as fileobj:
             bucket.put_object(oss_path, fileobj)
         # 获取文件URL
@@ -187,6 +187,11 @@ def get_item_files():
     data = request.json
     item_id = data.get('item_id')
     item_files = ItemFiles.query.get(item_id)
+    if not item_files:
+        return jsonify({
+            "message": "fail",
+            "status": -1,
+        })
     return jsonify({
         "message": "success",
         "status": 200,
