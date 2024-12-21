@@ -536,6 +536,8 @@ class Post(db.Model):
     starred = db.Column(db.Integer, nullable=True)
     time = db.Column(db.DateTime, default=datetime.now)
     comment_length = db.Column(db.Integer, nullable=True, default=0)
+    # 帖子类别：1-行业动态、2-职场树洞、3-分享瞬间
+    type = db.Column(db.Integer, nullable=True, default=0)
 
     def to_json(self):
         data = {
@@ -550,6 +552,7 @@ class Post(db.Model):
             "starred": self.starred,
             "time": self.time,
             "comment_length": self.comment_length,
+            "type": self.type,
         }
         if self.images:
             image_data = self.images[0]
