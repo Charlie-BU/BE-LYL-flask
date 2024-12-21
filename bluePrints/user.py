@@ -136,6 +136,7 @@ def get_user_star():
     })
 
 
+# 个人简历相关接口
 @bp.route('/upload_works_to_OSS', methods=['POST'])
 def upload_works_to_OSS():
     if not request.files.get('this_one'):
@@ -174,13 +175,29 @@ def upload_works_to_OSS():
 def get_item_id():
     data = request.json
     user_id = data.get('user_id')
-    salary = data.get('salary')
-    item = TpItem.query.filter_by(user_id=user_id, salary=salary).first()
-    return jsonify({
-        "message": "success",
-        "status": 200,
-        "item_id": item.id,
-    })
+    salary = data.get('salary')       # 简历有这个字段
+    title = data.get('title')         # 项目有这个字段
+    if salary:
+        item = TpItem.query.filter_by(user_id=user_id, salary=salary).first()
+        return jsonify({
+            "message": "success",
+            "status": 200,
+            "item_id": item.id,
+        })
+    elif title:
+        item = TpItem.query.filter_by(user_id=user_id, title=title).first()
+        return jsonify({
+            "message": "success",
+            "status": 200,
+            "item_id": item.id,
+        })
+    else:
+        return jsonify({
+            "message": "fail: can't find item",
+            "status": -1,
+            "item_id": None,
+        })
+
 
 @bp.route('/get_item_files', methods=['POST'])
 def get_item_files():
@@ -204,6 +221,7 @@ def get_item_files():
 def upload_works():
     data = request.json
     item_id = data['item_id']
+    print(item_id)
     item_type = data['item_type']
     files = data.get('files', [])
     # 动态填充 file1 到 file9，超出范围的设置为 None
@@ -238,6 +256,72 @@ def upload_works():
         )
         db.session.add(item_files)
     db.session.commit()
+    return jsonify({
+        "message": "success",
+        "status": 200,
+    })
+
+# 发布项目相关接口
+@bp.route('/upload_project_image_to_OSS', methods=['POST'])
+def upload_project_image_to_OSS():
+    if not request.files.get('this_one'):
+        return jsonify({
+            "message": "fail: no works",
+            "status": -1,
+        })
+    this_one = request.files['this_one']
+    # 保存文件到临时路径
+    temp_dir = os.path.join(os.getcwd(), 'tmp_for_projects')  # 在当前工作目录创建 'tmp' 文件夹
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_path = os.path.join(temp_dir, this_one.filename)  # 构建临时文件路径
+    this_one.save(temp_path)
+    try:
+        # 上传到OSS
+        oss_path = f'project_images/{this_one.filename}'  # 阿里云目录路径
+        with open(temp_path, 'rb') as fileobj:
+            bucket.put_object(oss_path, fileobj)
+        # 获取文件URL
+        file_url = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/{oss_path}'
+        # 删除临时文件
+        os.remove(temp_path)
+        return jsonify({
+            "url": file_url,
+            "message": "success",
+            "status": 200,
+        })
+    except Exception as e:
+        return jsonify({
+            "message": f"fail: {str(e)}",
+            "status": -1,
+        })
+
+
+@bp.route('/delete_item', methods=['POST'])
+def delete_item():
+    data = request.json
+    item_id = data.get('item_id')
+    user_id = data.get('user_id')
+    item = TpItem.query.get(item_id)
+    item_files = ItemFiles.query.get(item_id)
+    if item:
+        if item.user_id != user_id:
+            return jsonify({
+                "message": "unauthorized",
+                "status": -1,
+            })
+        db.session.delete(item)
+        if item_files:
+            prefix = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/'
+            url_list = [item_files.file1, item_files.file2, item_files.file3, item_files.file4,
+                        item_files.file5,
+                        item_files.file6, item_files.file7, item_files.file8, item_files.file9]
+            for url in url_list:
+                try:
+                    bucket.delete_object(url[len(prefix):])
+                except Exception:
+                    pass
+            db.session.delete(item_files)
+        db.session.commit()
     return jsonify({
         "message": "success",
         "status": 200,
