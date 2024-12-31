@@ -611,7 +611,8 @@ class Post_comment(db.Model):
             "sender_nickname": self.sender.nickname if self.sender else None,
             "sender_pic": self.sender.head_pic if self.sender else None,
             "likes": self.likes,
-            "post_id": self.post_id
+            "post_id": self.post_id,
+            "reply_length": len(self.replies),
         }
 
 
