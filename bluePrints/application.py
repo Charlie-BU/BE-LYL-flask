@@ -91,6 +91,33 @@ def get_post_comments_and_replies():
     })
 
 
+@bp.route('/get_post_comments', methods=['POST'])
+def get_post_comments():
+    data = request.json
+    comments = Post_comment.query.filter_by(post_id=data['post_id']).order_by(Post_comment.time.desc()).all()
+    comments = [Post_comment.to_json(comment) for comment in comments]
+    return jsonify({
+        "comments": comments,
+        "comment_length": len(comments),
+        "message": "success",
+        "status": 200,
+    })
+
+
+@bp.route('/get_comment_replies', methods=['POST'])
+def get_comment_replies():
+    data = request.json
+    replies = Post_comment_reply.query.filter_by(comment_id=data['comment_id']).order_by(
+        Post_comment_reply.time.desc()).all()
+    replies = [Post_comment_reply.to_json(reply) for reply in replies]
+    return jsonify({
+        "replies": replies,
+        "reply_length": len(replies),
+        "message": "success",
+        "status": 200,
+    })
+
+
 @bp.route('/send_comment', methods=['POST'])
 def send_comment():
     data = request.json
