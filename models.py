@@ -198,6 +198,7 @@ class TpItem(db.Model):
     add_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer)
 
+
 class ItemFiles(db.Model):
     __tablename__ = 'item_files'
     # 必须和item id保持一致
@@ -214,6 +215,7 @@ class ItemFiles(db.Model):
     file8 = db.Column(db.Text, nullable=True)
     file9 = db.Column(db.Text, nullable=True)
     length = db.Column(db.Integer, nullable=True)
+
     def to_json(self):
         data = {
             "id": self.id,
@@ -462,6 +464,8 @@ class TpUser(db.Model):
     user_token = db.Column(db.String(50), nullable=False)
     kf_img = db.Column(db.String(255), nullable=False)
     kf_show = db.Column(db.Integer, nullable=False)
+    days_logged = db.Column(db.Integer, nullable=False, default=0)
+    active_score = db.Column(db.Integer, nullable=False, default=0)
     star_as_elite = db.Column(db.Float, nullable=True, default=0)
     star_as_business = db.Column(db.Float, nullable=True, default=0)
 

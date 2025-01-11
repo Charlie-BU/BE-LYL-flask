@@ -1,4 +1,4 @@
-test = False
+test = True
 # 数据库配置
 USERNAME = "Charlie"
 PASSWORD = "liyilian666"
@@ -36,3 +36,7 @@ OSS_ACCESS_KEY_ID = 'LTAI5tRmNY2Aa1MZb1PK49Hg'
 OSS_ACCESS_KEY_SECRET = 'd4GH1DVJKhEX4ZXY5lEVNEFP31sn3z'
 OSS_BUCKET_NAME = 'liyilian'
 OSS_ENDPOINT = 'oss-cn-hangzhou.aliyuncs.com'       # 不能带liyilian.*
+
+
+# 定时任务配置
+# SCHEDULER_API_ENABLED = True

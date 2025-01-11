@@ -98,23 +98,49 @@ def send_notification(description='新消息通知'):
     })
 
 
+# 计算用户活跃度TODO
+# @bp.route('/calc_active_score', methods=['POST'])
+def calc_active_score(user):
+    today = datetime.today().date()
+    users = TpUser.query.all()
+    for user in users:
+        last_login_timestamp = user.last_login
+        last_login_date = datetime.fromtimestamp(last_login_timestamp).date()
+        if last_login_date == today:
+            user.active_score += 10 if user.active_score <= 90 else (
+                    100 - user.active_score) if (90 < user.active_score <= 100) else 0
+        else:
+            user.active_score -= 5 if user.active_score >= 5 else user.active_score if (
+                    0 <= user.active_score < 5) else 0
+        db.session.commit()
+    # return jsonify({
+    #     "message": "success",
+    #     "status": 200,
+    # })
+
+
 # 计算用户个人评分（简历完成度 + 客户满意度）
 # TODO：确定比例
 @bp.route('/calc_star_as_elite', methods=['POST'])
 def calc_star_as_elite():
     user_id = request.json['user_id']
     user = TpUser.query.get(user_id)
-    # 拿到该用户的简历
+    # INDEX1-简历评分
     resume = TpItem.query.filter(and_(TpItem.user_id == user_id, TpItem.type == 2)).first()
     resume_score = 0
-    # 有简历：25分；三个指标：每个25分
+    # 有简历（发布成功）：40分；三个指标：每个20分
     if resume and (resume.status in [1, 3]):
-        resume_score = 25
-        index = ['talents', 'strength', 'experience']
+        resume_score = 40
+        index = ['strength', 'experience']
         for key in index:
             if getattr(resume, key, None):  # 如果resume中的字段有key不为None；若无key，则返回None
-                resume_score += 25
-    overall_score = resume_score / 100 * 100
+                resume_score += 20
+        # 拿到简历作品，有则加20
+        works = ItemFiles.query.get(resume.id)
+        if works and works.length > 0:
+            resume_score += 20
+    calc_active_score(user)
+    overall_score = resume_score / 100 * 50 + user.active_score / 100 * 20
     user.star_as_elite = overall_score
     db.session.commit()
     return jsonify({
@@ -175,8 +201,8 @@ def upload_works_to_OSS():
 def get_item_id():
     data = request.json
     user_id = data.get('user_id')
-    salary = data.get('salary')       # 简历有这个字段
-    title = data.get('title')         # 项目有这个字段
+    salary = data.get('salary')  # 简历有这个字段
+    title = data.get('title')  # 项目有这个字段
     if salary:
         item = TpItem.query.filter_by(user_id=user_id, salary=salary).first()
         return jsonify({
@@ -260,6 +286,7 @@ def upload_works():
         "message": "success",
         "status": 200,
     })
+
 
 # 发布项目相关接口
 @bp.route('/upload_project_image_to_OSS', methods=['POST'])
