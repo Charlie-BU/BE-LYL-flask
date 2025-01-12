@@ -49,27 +49,45 @@ def update_active_score():
 
 @with_app_context
 def update_all_users_star():
+    # 获取所有用户及其简历信息，避免逐条查询
     users = TpUser.query.all()
+    user_ids = [user.user_id for user in users]
+    # 批量查询用户的简历
+    resumes = TpItem.query.filter(
+        and_(TpItem.user_id.in_(user_ids), TpItem.type == 2)
+    ).all()
+    resumes_map = {resume.user_id: resume for resume in resumes}
+    # 批量查询简历作品信息
+    resume_ids = [resume.id for resume in resumes]
+    works = ItemFiles.query.filter(ItemFiles.id.in_(resume_ids)).all()
+    works_map = {work.id: work for work in works}
+
     count = 0
+    updates = []
     for user in users:
-        # INDEX1-简历评分
-        resume = TpItem.query.filter(and_(TpItem.user_id == user.id, TpItem.type == 2)).first()
+        resume = resumes_map.get(user.user_id)
         resume_score = 0
-        # 有简历（发布成功）：40分；三个指标：每个20分
+        # 计算简历评分
         if resume and (resume.status in [1, 3]):
             resume_score = 40
             index = ['strength', 'experience']
             for key in index:
-                if getattr(resume, key, None):  # 如果resume中的字段有key不为None；若无key，则返回None
+                if getattr(resume, key, None):
                     resume_score += 20
-            # 拿到简历作品，有则加20
-            works = ItemFiles.query.get(resume.id)
-            if works and works.length > 0:
+            # 检查是否有作品
+            work = works_map.get(resume.id)
+            if work and work.length > 0:
                 resume_score += 20
-        # INDEX2-用户活跃度
+        # 计算总评分
         active_score = user.active_score
         overall_score = resume_score / 100 * 50 + active_score / 100 * 20
         user.star_as_elite = overall_score
-        db.session.commit()
+        updates.append(user)
         count += 1
-        print(f"已完成：{count}人")
+        # 打印进度
+        if count % 100 == 0:  # 每100条打印一次
+            print(f"已完成：{count}人")
+    # 批量提交更新
+    db.session.bulk_save_objects(updates)
+    db.session.commit()
+    print(f"更新完成，总计处理用户数：{count}")
