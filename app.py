@@ -1,13 +1,15 @@
-from flask import Flask, request, redirect, url_for, session, g, render_template, jsonify
-from sqlalchemy.testing.pickleable import User
-from exts import db, mail
-import config, datetime
-from config import *
-from models import *
-from bluePrints.user import bp as user_bp
-from bluePrints.application import bp as application_bp
+from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_cors import CORS
+from flask_apscheduler import APScheduler
+from pytz import timezone
+
+from exts import mail
+import config
+from models import *
+from schedule_tasks import *
+from bluePrints.user import bp as user_bp
+from bluePrints.application import bp as application_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +24,32 @@ migrate = Migrate(app, db)
 # 发送邮件初始化
 mail.init_app(app)
 
+# 配置APScheduler
+app.config['SCHEDULER_API_ENABLED'] = True  # 启用任务管理 API
+scheduler = APScheduler()
+# APScheduler初始化
+scheduler.init_app(app)
+
+# 添加每日0:00执行任务
+scheduler.add_job(
+    id='update_active_score',
+    func=update_active_score,
+    trigger='cron',
+    hour=0,
+    minute=0,
+    timezone=timezone('Asia/Shanghai')
+)
+scheduler.add_job(
+    id='update_all_users_star',
+    func=update_all_users_star,
+    trigger='cron',
+    hour=0,
+    minute=10,
+    timezone=timezone('Asia/Shanghai')
+)
+# 启动定时任务调度器
+scheduler.start()
+
 
 @app.route('/')
 def index():
@@ -33,23 +61,7 @@ def test():
     return "success"
 
 
-# 请求前检查是否有用户登录
-@app.before_request
-def my_before_request():
-    user_id = session.get("user_id")
-    if user_id:
-        user = User.query.get(user_id)
-        setattr(g, "user", user)
-    else:
-        setattr(g, "user", None)
-
-
-@app.context_processor
-def my_context_processor():
-    return {"user": g.user}
-
-
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    app.run(host="0.0.0.0", port=8000)
 else:
     application = app

@@ -10,9 +10,10 @@ auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
 bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 
 
-@bp.route('/get_all_posts', methods=['POST'])
-def get_all_posts():
-    posts = Post.query.order_by(Post.time.desc()).all()
+@bp.route('/get_posts_by_type', methods=['POST'])
+def get_posts_by_type():
+    type = request.json['type']
+    posts = Post.query.filter_by(type=type).order_by(Post.time.desc()).all()
     posts = [Post.to_json(post) for post in posts]
     return jsonify({
         "posts": posts,
@@ -21,6 +22,7 @@ def get_all_posts():
     })
 
 
+# 推荐帖子优先
 @bp.route('/get_all_posts_with_star', methods=['POST'])
 def get_all_posts_with_star():
     posts = Post.query.order_by(
@@ -84,6 +86,33 @@ def get_post_comments_and_replies():
     return jsonify({
         "comments": comments_and_replies,
         "comment_length": len(comments_and_replies),
+        "message": "success",
+        "status": 200,
+    })
+
+
+@bp.route('/get_post_comments', methods=['POST'])
+def get_post_comments():
+    data = request.json
+    comments = Post_comment.query.filter_by(post_id=data['post_id']).order_by(Post_comment.time.desc()).all()
+    comments = [Post_comment.to_json(comment) for comment in comments]
+    return jsonify({
+        "comments": comments,
+        "comment_length": len(comments),
+        "message": "success",
+        "status": 200,
+    })
+
+
+@bp.route('/get_comment_replies', methods=['POST'])
+def get_comment_replies():
+    data = request.json
+    replies = Post_comment_reply.query.filter_by(comment_id=data['comment_id']).order_by(
+        Post_comment_reply.time.desc()).all()
+    replies = [Post_comment_reply.to_json(reply) for reply in replies]
+    return jsonify({
+        "replies": replies,
+        "reply_length": len(replies),
         "message": "success",
         "status": 200,
     })
@@ -247,7 +276,14 @@ def upload_image_to_OSS():
 @bp.route('/send_post', methods=['POST'])
 def send_post():
     data = request.json
-    new_post = Post(title=data['title'], content=data['content'], poster_id=data['my_id'], likes=0, starred=0, comment_length=0)
+    try:
+        new_post = Post(title=data['title'], content=data['content'], poster_id=data['my_id'], likes=0, starred=0,
+                        comment_length=0, type=data['type'])
+    except KeyError:
+        return jsonify({
+            "message": "fail: info insufficient",
+            "status": -1,
+        })
     db.session.add(new_post)
     db.session.commit()
     this_post_id = Post.query.filter_by(content=data['content']).first().id
@@ -265,6 +301,7 @@ def send_post():
         "message": "success",
         "status": 200,
     })
+
 
 # # 多图片上传（不要这样）
 # @bp.route('/upload_multiple_images_to_OSS', methods=['POST'])

@@ -5,6 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="chore">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -16,6 +17,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTTP Request" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -59,6 +61,7 @@
     &quot;Flask 服务器.Flask.executor&quot;: &quot;Run&quot;,
     &quot;Flask 服务器.Liyilian.executor&quot;: &quot;Run&quot;,
     &quot;Python.BE-LYL-flask.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
@@ -105,6 +108,29 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="BE-LYL-flask" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../Python" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../Python/test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="BE-TJTT" type="Python.FlaskServer">
       <module name="BE-TJTT" />
       <option name="target" value="$PROJECT_DIR$/app.py" />
@@ -143,7 +169,13 @@
       <item itemvalue="Flask server.BE-TJTT" />
       <item itemvalue="Flask server.Liyilian" />
       <item itemvalue="Python.BE-LYL-flask" />
+      <item itemvalue="Python.test" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.test" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -215,7 +247,19 @@
       <workItem from="1733475348301" duration="2910000" />
       <workItem from="1733842884636" duration="1695000" />
       <workItem from="1733880087198" duration="603000" />
-      <workItem from="1734142536668" duration="7863000" />
+      <workItem from="1734142536668" duration="9262000" />
+      <workItem from="1734706341061" duration="4431000" />
+      <workItem from="1734748514100" duration="3694000" />
+      <workItem from="1734765109272" duration="5002000" />
+      <workItem from="1735008001053" duration="2000" />
+      <workItem from="1735025943989" duration="10000" />
+      <workItem from="1735209453585" duration="13000" />
+      <workItem from="1735609448406" duration="4518000" />
+      <workItem from="1736588235463" duration="4371000" />
+      <workItem from="1736611078548" duration="3949000" />
+      <workItem from="1736615916185" duration="1628000" />
+      <workItem from="1736648949791" duration="9486000" />
+      <workItem from="1736700456819" duration="1762000" />
     </task>
     <task id="LOCAL-00001" summary="chore">
       <option name="closed" value="true" />
@@ -361,7 +405,71 @@
       <option name="project" value="LOCAL" />
       <updated>1734153874244</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="chore">
+      <option name="closed" value="true" />
+      <created>1734153890747</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1734153890747</updated>
+    </task>
+    <task id="LOCAL-00020" summary="chore">
+      <option name="closed" value="true" />
+      <created>1734711043293</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1734711043293</updated>
+    </task>
+    <task id="LOCAL-00021" summary="chore">
+      <option name="closed" value="true" />
+      <created>1734753105554</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1734753105554</updated>
+    </task>
+    <task id="LOCAL-00022" summary="chore">
+      <option name="closed" value="true" />
+      <created>1734770928902</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1734770928902</updated>
+    </task>
+    <task id="LOCAL-00023" summary="chore">
+      <option name="closed" value="true" />
+      <created>1735621149581</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1735621149581</updated>
+    </task>
+    <task id="LOCAL-00024" summary="chore">
+      <option name="closed" value="true" />
+      <created>1736617503876</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1736617503876</updated>
+    </task>
+    <task id="LOCAL-00025" summary="chore">
+      <option name="closed" value="true" />
+      <created>1736659120417</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1736659120417</updated>
+    </task>
+    <task id="LOCAL-00026" summary="chore">
+      <option name="closed" value="true" />
+      <created>1736701132834</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1736701132834</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -374,7 +482,8 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/BE_LYL_flask$BE_LYL_flask.coverage" NAME="BE-LYL-flask 覆盖结果" MODIFIED="1731464667565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/BE_flask$BE_TJTT.coverage" NAME="BE-TJTT 覆盖结果" MODIFIED="1730274246694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/BE_LYL_flask$Liyilian.coverage" NAME="Liyilian Coverage Results" MODIFIED="1734149464402" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/BE_LYL_flask$Liyilian.coverage" NAME="Liyilian Coverage Results" MODIFIED="1736701554504" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/BE_LYL_flask$test.coverage" NAME="test Coverage Results" MODIFIED="1736649638717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../Python" />
     <SUITE FILE_PATH="coverage/BE_flask$Liyilian.coverage" NAME="Liyilian 覆盖结果" MODIFIED="1730274315559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/BE_TJTT$Flask.coverage" NAME="Flask 覆盖结果" MODIFIED="1728977180516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/BE_flask$BE_flask.coverage" NAME="BE-flask 覆盖结果" MODIFIED="1730540931079" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
