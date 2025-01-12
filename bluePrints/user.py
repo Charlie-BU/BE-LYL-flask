@@ -1,5 +1,7 @@
 import base64
 import os, oss2
+import time
+
 from flask import Blueprint, request, jsonify
 from sqlalchemy import and_, or_
 from hooks import *
@@ -65,6 +67,20 @@ def store_openid():
     })
 
 
+# 更新last_login时间戳
+@bp.route('/update_last_login', methods=['POST'])
+def update_last_login():
+    user_id = request.json.get("user_id")
+    me = TpUser.query.get(user_id)
+    me.last_login = time.time()
+    db.session.commit()
+    print(me.last_login)
+    return jsonify({
+        "status": 200,
+        "message": "success",
+    })
+
+
 # 处理并发送新消息通知
 @bp.route('/send_notification', methods=['POST'])
 def send_notification(description='新消息通知'):
@@ -98,27 +114,6 @@ def send_notification(description='新消息通知'):
     })
 
 
-# 计算用户活跃度TODO
-# @bp.route('/calc_active_score', methods=['POST'])
-def calc_active_score(user):
-    today = datetime.today().date()
-    users = TpUser.query.all()
-    for user in users:
-        last_login_timestamp = user.last_login
-        last_login_date = datetime.fromtimestamp(last_login_timestamp).date()
-        if last_login_date == today:
-            user.active_score += 10 if user.active_score <= 90 else (
-                    100 - user.active_score) if (90 < user.active_score <= 100) else 0
-        else:
-            user.active_score -= 5 if user.active_score >= 5 else user.active_score if (
-                    0 <= user.active_score < 5) else 0
-        db.session.commit()
-    # return jsonify({
-    #     "message": "success",
-    #     "status": 200,
-    # })
-
-
 # 计算用户个人评分（简历完成度 + 客户满意度）
 # TODO：确定比例
 @bp.route('/calc_star_as_elite', methods=['POST'])
@@ -139,8 +134,9 @@ def calc_star_as_elite():
         works = ItemFiles.query.get(resume.id)
         if works and works.length > 0:
             resume_score += 20
-    calc_active_score(user)
-    overall_score = resume_score / 100 * 50 + user.active_score / 100 * 20
+    # INDEX2-用户活跃度
+    active_score = user.active_score
+    overall_score = resume_score / 100 * 50 + active_score / 100 * 20
     user.star_as_elite = overall_score
     db.session.commit()
     return jsonify({

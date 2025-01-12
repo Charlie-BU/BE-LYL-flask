@@ -9,3 +9,7 @@ PyMySQL==1.1.1
 sqlalchemy~=2.0.30
 requests~=2.32.2
 oss2==2.19.1
+flask-migrate~=4.0.5
+flask-apscheduler~=1.13.1
+pytz~=2024.1
+alembic~=1.14.0

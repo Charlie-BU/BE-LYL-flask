@@ -1,4 +1,4 @@
-from flask import Flask, g, render_template
+from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_apscheduler import APScheduler
@@ -7,7 +7,7 @@ from pytz import timezone
 from exts import mail
 import config
 from models import *
-from schedule_task import *
+from schedule_tasks import *
 from bluePrints.user import bp as user_bp
 from bluePrints.application import bp as application_bp
 
@@ -24,27 +24,24 @@ migrate = Migrate(app, db)
 # 发送邮件初始化
 mail.init_app(app)
 
+# 配置APScheduler
+app.config['SCHEDULER_API_ENABLED'] = True  # 启用任务管理 API
+scheduler = APScheduler()
+# APScheduler初始化
+scheduler.init_app(app)
 
-# # 配置 APScheduler
-# class Config:
-#     SCHEDULER_API_ENABLED = True
+# 添加每日0:00执行任务
+scheduler.add_job(
+    id='update_active_score',
+    func=update_active_score,
+    trigger='cron',
+    hour=0,
+    minute=0,
+    timezone=timezone('Asia/Shanghai')
+)
+# 启动定时任务调度器
+scheduler.start()
 
-
-# app.config.from_object(Config)
-# # 定时任务初始化
-# scheduler = APScheduler()
-# scheduler.init_app(app)
-# # 添加每日0:00执行任务
-# scheduler.add_job(
-#     id='update_login_state',  # 任务 ID
-#     func=update_login_state,  # 任务函数
-#     trigger='cron',  # 使用 cron 表达式
-#     hour=12,  # 每天的 0 点
-#     minute=52,  # 0 分
-#     timezone=timezone('Asia/Shanghai')
-# )
-# # 启动定时任务调度器
-# scheduler.start()
 
 @app.route('/')
 def index():
