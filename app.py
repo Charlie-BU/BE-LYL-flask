@@ -39,6 +39,14 @@ scheduler.add_job(
     minute=0,
     timezone=timezone('Asia/Shanghai')
 )
+scheduler.add_job(
+    id='update_all_users_star',
+    func=update_all_users_star,
+    trigger='cron',
+    hour=0,
+    minute=10,
+    timezone=timezone('Asia/Shanghai')
+)
 # 启动定时任务调度器
 scheduler.start()
 
