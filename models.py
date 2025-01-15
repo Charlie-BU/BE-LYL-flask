@@ -464,7 +464,7 @@ class TpUser(db.Model):
     user_token = db.Column(db.String(50), nullable=False)
     kf_img = db.Column(db.String(255), nullable=False)
     kf_show = db.Column(db.Integer, nullable=False)
-    active_score = db.Column(db.Integer, nullable=False, default=0)
+    active_score = db.Column(db.Integer, nullable=False, default=100)
     star_as_elite = db.Column(db.Float, nullable=True, default=0)
     star_as_business = db.Column(db.Float, nullable=True, default=0)
 
