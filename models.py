@@ -197,6 +197,36 @@ class TpItem(db.Model):
     refuse_time = db.Column(db.Integer, server_default=db.FetchedValue())
     add_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer)
+    cooperater_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
+    cooperater = db.relationship('TpUser', backref='items_in_cooperation')
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "user_id": self.user_id,
+            "type": self.type,
+            "title": self.title,
+            "birthday": self.birthday,
+            "property": self.property,
+            "citys": self.citys,
+            "salary": self.salary,
+            "sex": self.sex,
+            "salary_unit": self.salary_unit,
+            "tags": self.tags,
+            "post": self.post,
+            "talents": self.talents,
+            "hz_start_time": self.hz_start_time,
+            "hz_end_time": self.hz_end_time,
+            "strength": self.strength,
+            "experience": self.experience,
+            "remark": self.remark,
+            "check_time": self.check_time,
+            "refuse_time": self.refuse_time,
+            "add_time": self.add_time,
+            "update_time": self.update_time,
+            "cooperater_id": self.cooperater_id,
+        }
+        return data
 
 
 class ItemFiles(db.Model):
@@ -628,6 +658,8 @@ class Post_comment_reply(db.Model):
     sender = db.relationship('TpUser', backref="replies")
     comment_id = db.Column(db.Integer, db.ForeignKey('post_comment.id'))
     comment = db.relationship('Post_comment', backref="replies")
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    post = db.relationship('Post', backref="comment_replies")
 
     def to_json(self):
         return {
@@ -640,6 +672,7 @@ class Post_comment_reply(db.Model):
             "sender_pic": self.sender.head_pic if self.sender else None,
             "comment_id": self.comment_id,
             "comment_sender": self.comment.sender.realname if self.comment.sender.realname else self.comment.sender.nickname if self.comment.sender.nickname else None,
+            "post_id": self.post_id,
         }
 
 
