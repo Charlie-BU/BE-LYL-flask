@@ -13,7 +13,10 @@ bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 @bp.route('/get_posts_by_type', methods=['POST'])
 def get_posts_by_type():
     type = request.json['type']
-    posts = Post.query.filter_by(type=type).order_by(Post.time.desc()).all()
+    posts = Post.query.filter_by(type=type).order_by(
+        case((Post.starred, 0), else_=1),  # 如果 starred 为 True，则值为 0，否则为 1
+        Post.time.desc()
+    ).all()
     posts = [Post.to_json(post) for post in posts]
     return jsonify({
         "posts": posts,
@@ -133,7 +136,7 @@ def send_comment():
 @bp.route('/send_comment_reply', methods=['POST'])
 def send_comment_reply():
     data = request.json
-    new_comment_reply = Post_comment_reply(content=data['content'], sender_id=data['my_id'],
+    new_comment_reply = Post_comment_reply(content=data['content'], sender_id=data['my_id'], post_id=data['post_id'],
                                            comment_id=data['comment_id'])
     db.session.add(new_comment_reply)
     db.session.commit()
@@ -181,6 +184,7 @@ def delete_post():
             except Exception:
                 pass
         db.session.delete(post_image)
+    Post_comment_reply.query.filter_by(post_id=post_id).delete()
     Post_comment.query.filter_by(post_id=post_id).delete()
     db.session.delete(post)
     db.session.commit()
@@ -351,4 +355,53 @@ def get_all_item_chats():
         "all_chats": all_chats,
         "message": "success",
         "status": 200,
+    })
+
+
+# 项目合作
+@bp.route('/item_cooperate', methods=['POST'])
+def item_cooperate():
+    data = request.json
+    item_id = data['item_id']
+    cooperator_id = data['cooperator_id']
+    item = TpItem.query.get(item_id)
+    if item.cooperator_id == cooperator_id:
+        return jsonify({
+            "status": -2,
+            "message": "already in cooperate",
+        })
+    elif item.cooperator_id and item.cooperator_id != cooperator_id:
+        return jsonify({
+            "status": -1,
+            "message": "item occupied",
+        })
+    item.cooperator_id = cooperator_id
+    db.session.commit()
+    return jsonify({
+        "status": 200,
+        "message": "success",
+    })
+
+
+@bp.route('/item_terminate_cooperate', methods=['POST'])
+def item_terminate_cooperate():
+    data = request.json
+    item_id = data['item_id']
+    item_owner_id = data['item_owner_id']
+    item = TpItem.query.get(item_id)
+    if item.user_id != item_owner_id:
+        return jsonify({
+            "status": -1,
+            "message": "unauthorized",
+        })
+    elif not item.cooperator_id:
+        return jsonify({
+            "status": -2,
+            "message": "item not in cooperate",
+        })
+    item.cooperator_id = None
+    db.session.commit()
+    return jsonify({
+        "status": 200,
+        "message": "success",
     })
