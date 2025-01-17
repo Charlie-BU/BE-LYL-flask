@@ -1,5 +1,6 @@
+import time
 from datetime import datetime, timedelta
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, delete
 
 from decorator import with_app_context
 from models import *
@@ -91,3 +92,20 @@ def update_all_users_star():
     db.session.bulk_save_objects(updates)
     db.session.commit()
     print(f"更新完成，总计处理用户数：{count}")
+
+
+@with_app_context
+def delete_outdated_items():
+    now = time.time()
+    three_months = 7776000
+    delete_stmt = delete(TpItem).where(
+        TpItem.type == 1,
+        now - TpItem.add_time > three_months,
+        now - TpItem.update_time > three_months,
+        now - TpItem.refresh_time > three_months,
+        now - TpItem.check_time > three_months,
+        now - TpItem.refuse_time > three_months,
+    )
+    db.session.execute(delete_stmt)
+    db.session.commit()
+    print("删除完成")

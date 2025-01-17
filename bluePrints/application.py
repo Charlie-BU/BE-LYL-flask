@@ -362,46 +362,61 @@ def get_all_item_chats():
 @bp.route('/item_cooperate', methods=['POST'])
 def item_cooperate():
     data = request.json
-    item_id = data['item_id']
-    cooperator_id = data['cooperator_id']
+    item_id = data.get('item_id')
+    cooperator_id = data.get('cooperator_id')
     item = TpItem.query.get(item_id)
-    if item.cooperator_id == cooperator_id:
-        return jsonify({
-            "status": -2,
-            "message": "already in cooperate",
-        })
-    elif item.cooperator_id and item.cooperator_id != cooperator_id:
-        return jsonify({
-            "status": -1,
-            "message": "item occupied",
-        })
-    item.cooperator_id = cooperator_id
-    db.session.commit()
+    # 遍历检查合作字段
+    for i in range(1, 6):
+        cooperator_attr = f"cooperator{i}_id"
+        # 如果字段为空，设置合作用户
+        if not getattr(item, cooperator_attr, None):
+            setattr(item, cooperator_attr, cooperator_id)
+            db.session.commit()
+            return jsonify({
+                "status": 200,
+                "message": "合作成功",
+            })
+        # 如果字段中已存在此用户
+        if getattr(item, cooperator_attr) == cooperator_id:
+            return jsonify({
+                "status": -1,
+                "message": "本项目已与该用户合作",
+            })
+    # 合作名额已满
     return jsonify({
-        "status": 200,
-        "message": "success",
+        "status": -2,
+        "message": "本项目意向合作名额已满",
     })
 
 
 @bp.route('/item_terminate_cooperate', methods=['POST'])
 def item_terminate_cooperate():
     data = request.json
-    item_id = data['item_id']
-    item_owner_id = data['item_owner_id']
+    item_id = data.get('item_id')
+    item_owner_id = data.get('item_owner_id')
+    cooperator_id = data.get('cooperator_id')
+    # 获取项目
     item = TpItem.query.get(item_id)
+    # 检查权限
     if item.user_id != item_owner_id:
         return jsonify({
-            "status": -1,
+            "status": 403,
             "message": "unauthorized",
         })
-    elif not item.cooperator_id:
-        return jsonify({
-            "status": -2,
-            "message": "item not in cooperate",
-        })
-    item.cooperator_id = None
-    db.session.commit()
+    # 遍历合作关系字段
+    for i in range(1, 6):
+        cooperator_attr = f"cooperator{i}_id"
+        # 检查合作关系是否存在
+        if getattr(item, cooperator_attr, None) == cooperator_id:
+            # 移除合作关系
+            setattr(item, cooperator_attr, None)
+            db.session.commit()
+            return jsonify({
+                "status": 200,
+                "message": "合作关系已终止",
+            })
+    # 未找到合作关系
     return jsonify({
-        "status": 200,
-        "message": "success",
+        "status": -1,
+        "message": "未找到指定的合作关系",
     })
