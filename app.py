@@ -47,6 +47,14 @@ scheduler.add_job(
     minute=10,
     timezone=timezone('Asia/Shanghai')
 )
+scheduler.add_job(
+    id='delete_outdated_items',
+    func=delete_outdated_items,
+    trigger='cron',
+    hour=1,
+    minute=0,
+    timezone=timezone('Asia/Shanghai')
+)
 # 启动定时任务调度器
 scheduler.start()
 
