@@ -197,8 +197,8 @@ class TpItem(db.Model):
     refuse_time = db.Column(db.Integer, server_default=db.FetchedValue())
     add_time = db.Column(db.Integer, nullable=False)
     update_time = db.Column(db.Integer)
-    cooperater_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
-    cooperater = db.relationship('TpUser', backref='items_in_cooperation')
+    cooperator_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
+    cooperator = db.relationship('TpUser', backref='items_in_cooperation')
 
     def to_json(self):
         data = {
@@ -224,7 +224,7 @@ class TpItem(db.Model):
             "refuse_time": self.refuse_time,
             "add_time": self.add_time,
             "update_time": self.update_time,
-            "cooperater_id": self.cooperater_id,
+            "cooperator_id": self.cooperator_id,
         }
         return data
 
