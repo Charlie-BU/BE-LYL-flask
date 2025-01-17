@@ -1,8 +1,6 @@
 import base64
 import os, oss2
 import time
-
-from PIL.DdsImagePlugin import item
 from flask import Blueprint, request, jsonify
 from sqlalchemy import and_, or_
 from hooks import *
