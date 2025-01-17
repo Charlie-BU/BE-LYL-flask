@@ -114,7 +114,6 @@ def send_notification(description='新消息通知'):
 
 
 # 计算用户个人评分（简历完成度 + 客户满意度）
-# TODO：确定比例
 @bp.route('/calc_star_as_elite', methods=['POST'])
 def calc_star_as_elite():
     user_id = request.json['user_id']
@@ -135,7 +134,7 @@ def calc_star_as_elite():
             resume_score += 20
     # INDEX2-用户活跃度
     active_score = user.active_score
-    overall_score = resume_score / 100 * 50 + active_score / 100 * 20
+    overall_score = resume_score / 100 * 50 + active_score / 100 * 20 + 30
     user.star_as_elite = overall_score
     db.session.commit()
     return jsonify({
