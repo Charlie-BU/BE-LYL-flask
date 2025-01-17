@@ -2,6 +2,7 @@ import base64
 import os, oss2
 import time
 
+from PIL.DdsImagePlugin import item
 from flask import Blueprint, request, jsonify
 from sqlalchemy import and_, or_
 from hooks import *
@@ -148,9 +149,11 @@ def calc_star_as_elite():
 @bp.route('/get_user_star', methods=['POST'])
 def get_user_star():
     user = TpUser.query.get(request.json['user_id'])
+    username = user.realname if user.realname else user.nickname
     star_as_elite = user.star_as_elite if user.star_as_elite else 0
     star_as_business = user.star_as_business if user.star_as_business else 0
     return jsonify({
+        "username": username,
         "star_as_elite": star_as_elite,
         "star_as_business": star_as_business,
         "message": "success",
@@ -348,4 +351,22 @@ def delete_item():
     return jsonify({
         "message": "success",
         "status": 200,
+    })
+
+
+# 拿到该人的全部项目
+@bp.route('/get_his_items', methods=['POST'])
+def get_his_items():
+    data = request.json
+    user_id = data.get('user_id')
+    items = (TpItem.query.filter(and_(
+        TpItem.user_id == user_id,
+        TpItem.type == 1
+    )).all())
+    items = [[item.id, item.title] for item in items]
+    print(items)
+    return jsonify({
+        "message": "success",
+        "status": 200,
+        "items": items,
     })

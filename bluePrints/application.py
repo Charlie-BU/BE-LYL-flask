@@ -363,14 +363,43 @@ def get_all_item_chats():
 def item_cooperate():
     data = request.json
     item_id = data['item_id']
-    cooperater_id = data['cooperater_id']
+    cooperator_id = data['cooperator_id']
     item = TpItem.query.get(item_id)
-    if item.cooperater_id:
+    if item.cooperator_id == cooperator_id:
+        return jsonify({
+            "status": -2,
+            "message": "already in cooperate",
+        })
+    elif item.cooperator_id and item.cooperator_id != cooperator_id:
         return jsonify({
             "status": -1,
             "message": "item occupied",
         })
-    item.cooperater_id = cooperater_id
+    item.cooperator_id = cooperator_id
+    db.session.commit()
+    return jsonify({
+        "status": 200,
+        "message": "success",
+    })
+
+
+@bp.route('/item_terminate_cooperate', methods=['POST'])
+def item_terminate_cooperate():
+    data = request.json
+    item_id = data['item_id']
+    item_owner_id = data['item_owner_id']
+    item = TpItem.query.get(item_id)
+    if item.user_id != item_owner_id:
+        return jsonify({
+            "status": -1,
+            "message": "unauthorized",
+        })
+    elif not item.cooperator_id:
+        return jsonify({
+            "status": -2,
+            "message": "item not in cooperate",
+        })
+    item.cooperator_id = None
     db.session.commit()
     return jsonify({
         "status": 200,
