@@ -113,7 +113,7 @@ def send_notification(description='新消息通知'):
     })
 
 
-# 计算用户个人评分（简历完成度 + 客户满意度）
+# 计算用户个人评分（简历完成度 + 用户活跃度 + 客户满意度）
 @bp.route('/calc_star_as_elite', methods=['POST'])
 def calc_star_as_elite():
     user_id = request.json['user_id']
@@ -134,7 +134,9 @@ def calc_star_as_elite():
             resume_score += 20
     # INDEX2-用户活跃度
     active_score = user.active_score
-    overall_score = resume_score / 100 * 50 + active_score / 100 * 20 + 30
+    # INDEX3-客户满意度
+    cooperation_evaluate_score = user.cooperation_evaluate_score
+    overall_score = resume_score / 100 * 50 + active_score / 100 * 20 + cooperation_evaluate_score / 5 * 30
     user.star_as_elite = overall_score
     db.session.commit()
     return jsonify({
@@ -149,12 +151,12 @@ def get_user_star():
     user = TpUser.query.get(user_id)
     username = user.realname if user.realname else user.nickname
     star_as_elite = user.star_as_elite if user.star_as_elite else 0
-    star_as_business = user.star_as_business if user.star_as_business else 0
+    cooperation_evaluate_score = user.cooperation_evaluate_score if user.cooperation_evaluate_score else 0
     return jsonify({
         "user_id": user_id,
         "username": username,
         "star_as_elite": star_as_elite,
-        "star_as_business": star_as_business,
+        "cooperation_evaluate_score": cooperation_evaluate_score,
         "message": "success",
         "status": 200,
     })
@@ -363,9 +365,92 @@ def get_his_items():
         TpItem.type == 1
     )).all())
     items = [[item.id, item.title] for item in items]
-    print(items)
     return jsonify({
         "message": "success",
         "status": 200,
         "items": items,
+    })
+
+
+@bp.route('/get_evaluate_items_Im_buyer', methods=['POST'])
+def get_evaluate_items_Im_buyer():
+    data = request.json
+    my_id = data.get('my_id')
+    to_id = data.get('to_id')
+    items = TpItem.query.filter(and_(
+        TpItem.user_id == to_id,
+        TpItem.type == 1,
+        or_(
+            TpItem.cooperator1_id == my_id,
+            TpItem.cooperator2_id == my_id,
+            TpItem.cooperator3_id == my_id,
+            TpItem.cooperator4_id == my_id,
+            TpItem.cooperator5_id == my_id,
+        ),
+        TpItem.is_evaluated == 0,
+    )).all()
+    items = [[item.id, item.title] for item in items]
+    return jsonify({
+        "message": "success",
+        "status": 200,
+        "items": items,
+    })
+
+
+
+@bp.route('/get_evaluate_items_Im_seller', methods=['POST'])
+def get_evaluate_items_Im_seller():
+    data = request.json
+    my_id = data.get('my_id')
+    to_id = data.get('to_id')
+    items = TpItem.query.filter(and_(
+        TpItem.user_id == my_id,
+        TpItem.type == 1,
+        or_(
+            TpItem.cooperator1_id == to_id,
+            TpItem.cooperator2_id == to_id,
+            TpItem.cooperator3_id == to_id,
+            TpItem.cooperator4_id == to_id,
+            TpItem.cooperator5_id == to_id,
+        ),
+    )).all()
+    items = [[item.id, item.title] for item in items]
+    return jsonify({
+        "message": "success",
+        "status": 200,
+        "items": items,
+    })
+
+
+# 合作评价
+@bp.route('/cooperation_evaluate', methods=['POST'])
+def cooperation_evaluate():
+    data = request.json
+    my_id = data.get('my_id')
+    to_id = data.get('to_id')
+    item_id = data.get('item_id')
+    evaluateIndex1 = data.get("evaluateIndex1")
+    evaluateIndex2 = data.get("evaluateIndex2")
+    if not my_id or not to_id:
+        return jsonify({
+            "message": "评价者不存在，请稍后再试",
+            "status": -1,
+        })
+    item = TpItem.query.get(item_id)
+    if item.is_evaluated:       # 如果项目方已评价过，则必然是人才方先行评价，项目方此时正在评价，这时解除双方合作关系
+        for i in range(1, 6):
+            cooperator_attr = f"cooperator{i}_id"
+            # 检查合作关系是否存在
+            if getattr(item, cooperator_attr, None) == to_id:
+                # 移除合作关系
+                setattr(item, cooperator_attr, None)
+                db.session.commit()
+    ave_score = (float(evaluateIndex1) + float(evaluateIndex2)) / 2
+    user = TpUser.query.get(to_id)
+    user.cooperation_evaluate_score = format(((float(user.cooperation_evaluate_score) + ave_score) / 2), ".2f")
+    item.is_evaluated = 1
+    db.session.commit()
+    return jsonify({
+        "message": "success",
+        "status": 200,
     })

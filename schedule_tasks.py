@@ -81,7 +81,9 @@ def update_all_users_star():
                 resume_score += 20
         # 计算总评分
         active_score = user.active_score
-        overall_score = resume_score / 100 * 50 + active_score / 100 * 20
+        # INDEX3-客户满意度
+        cooperation_evaluate_score = user.cooperation_evaluate_score
+        overall_score = resume_score / 100 * 50 + active_score / 100 * 20 + cooperation_evaluate_score / 5 * 30
         user.star_as_elite = overall_score
         updates.append(user)
         count += 1

@@ -202,6 +202,7 @@ class TpItem(db.Model):
     cooperator3_id = db.Column(db.Integer)
     cooperator4_id = db.Column(db.Integer)
     cooperator5_id = db.Column(db.Integer)
+    is_evaluated = db.Column(db.Boolean, nullable=False)
 
     def to_json(self):
         data = {
@@ -232,6 +233,7 @@ class TpItem(db.Model):
             "cooperator3_id": self.cooperator3_id,
             "cooperator4_id": self.cooperator4_id,
             "cooperator5_id": self.cooperator5_id,
+            "is_evaluated": self.is_evaluated,
         }
         return data
 
@@ -502,8 +504,8 @@ class TpUser(db.Model):
     kf_img = db.Column(db.String(255), nullable=False)
     kf_show = db.Column(db.Integer, nullable=False)
     active_score = db.Column(db.Integer, nullable=False, default=100)
+    cooperation_evaluate_score = db.Column(db.Float, nullable=False, default=5)
     star_as_elite = db.Column(db.Float, nullable=True, default=0)
-    star_as_business = db.Column(db.Float, nullable=True, default=0)
 
 
 class TpVoucher(db.Model):
