@@ -73,7 +73,6 @@ def update_last_login():
     me = TpUser.query.get(user_id)
     me.last_login = time.time()
     db.session.commit()
-    print(me.last_login)
     return jsonify({
         "status": 200,
         "message": "success",
@@ -247,7 +246,6 @@ def get_item_files():
 def upload_works():
     data = request.json
     item_id = data['item_id']
-    print(item_id)
     item_type = data['item_type']
     files = data.get('files', [])
     # 动态填充 file1 到 file9，超出范围的设置为 None
@@ -397,7 +395,6 @@ def get_evaluate_items_Im_buyer():
     })
 
 
-
 @bp.route('/get_evaluate_items_Im_seller', methods=['POST'])
 def get_evaluate_items_Im_seller():
     data = request.json
@@ -437,7 +434,7 @@ def cooperation_evaluate():
             "status": -1,
         })
     item = TpItem.query.get(item_id)
-    if item.is_evaluated:       # 如果项目方已评价过，则必然是人才方先行评价，项目方此时正在评价，这时解除双方合作关系
+    if item.is_evaluated:  # 如果项目方已评价过，则必然是人才方先行评价，项目方此时正在评价，这时解除双方合作关系
         for i in range(1, 6):
             cooperator_attr = f"cooperator{i}_id"
             # 检查合作关系是否存在
@@ -453,4 +450,64 @@ def cooperation_evaluate():
     return jsonify({
         "message": "success",
         "status": 200,
+    })
+
+
+@bp.route('/edit_user_resume', methods=['POST'])
+def edit_user_resume():
+    data = request.json
+    userId = data.get('user_id')
+    type = data.get('type')
+    birthday = data.get('birthday')
+    citys = data.get('citys')
+    experience = data.get('experience')
+    is_evaluated = data.get('is_evaluated')
+    post = data.get('post')
+    property = data.get('property')
+    remark = data.get('remark')
+    salary = data.get('salary')
+    salary_unit = data.get('salary_unit')
+    sex = data.get('sex')
+    strength = data.get('strength')
+    tags = data.get('tags')
+    talents = data.get('talents')
+
+    exist_item = TpItem.query.filter_by(user_id=userId, type=type).first()
+    if exist_item:
+        exist_item.birthday = birthday
+        exist_item.citys = citys
+        exist_item.experience = experience
+        exist_item.is_evaluated = is_evaluated
+        exist_item.post = post
+        exist_item.property = property
+        exist_item.remark = remark
+        exist_item.salary = salary
+        exist_item.salary_unit = salary_unit
+        exist_item.sex = sex
+        exist_item.strength = strength
+        exist_item.tags = tags
+        exist_item.talents = talents
+    else:
+        new_item = TpItem(
+            user_id=userId,
+            type=type,
+            birthday=birthday,
+            citys=citys,
+            experience=experience,
+            is_evaluated=is_evaluated,
+            post=post,
+            property=property,
+            remark=remark,
+            salary=salary,
+            salary_unit=salary_unit,
+            sex=sex,
+            strength=strength,
+            tags=tags,
+            talents=talents
+        )
+        db.session.add(new_item)
+    db.session.commit()
+    return jsonify({
+        "status": 200,
+        "message": "用户简历新增 / 修改成功",
     })
