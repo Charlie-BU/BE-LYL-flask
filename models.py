@@ -577,7 +577,14 @@ class Post(db.Model):
     likes = db.Column(db.Integer, nullable=True)
     starred = db.Column(db.Integer, nullable=True)
     time = db.Column(db.DateTime, default=datetime.now)
-    comment_length = db.Column(db.Integer, nullable=True, default=0)
+
+    # comment_length = db.Column(db.Integer, nullable=True, default=0)
+    @property
+    def comment_length(self):
+        length1 = Post_comment.query.filter_by(post_id=self.id).count()
+        length2 = Post_comment_reply.query.filter_by(post_id=self.id).count()
+        return length1 + length2
+
     # 帖子类别：1-行业动态、2-职场树洞、3-分享瞬间
     type = db.Column(db.Integer, nullable=True, default=0)
 

@@ -83,9 +83,6 @@ def get_post_comments_and_replies():
         Post_comment_reply.time.desc()).all()
     replies = [Post_comment_reply.to_json(reply) for reply in replies]
     comments_and_replies = sorted(comments + replies, key=lambda ele: ele['time'], reverse=True)
-    post = Post.query.get(data['post_id'])
-    post.comment_length = len(comments_and_replies)
-    db.session.commit()
     return jsonify({
         "comments": comments_and_replies,
         "comment_length": len(comments_and_replies),
@@ -282,7 +279,7 @@ def send_post():
     data = request.json
     try:
         new_post = Post(title=data['title'], content=data['content'], poster_id=data['my_id'], likes=0, starred=0,
-                        comment_length=0, type=data['type'])
+                        type=data['type'])
     except KeyError:
         return jsonify({
             "message": "fail: info insufficient",
