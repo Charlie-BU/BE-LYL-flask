@@ -417,3 +417,63 @@ def item_terminate_cooperate():
         "status": -1,
         "message": "未找到指定的合作关系",
     })
+
+
+@bp.route('/edit_item', methods=['POST'])
+def edit_item():
+    data = request.json
+    userId = data.get('user_id')
+    type = data.get('type')
+    citys = data.get('citys')
+    experience = data.get('experience')
+    hz_start_time = data.get('hz_start_time')
+    hz_end_time = data.get('hz_end_time')
+    post = data.get('post')
+    property = data.get('property')
+    remark = data.get('remark')
+    salary = data.get('salary')
+    salary_unit = data.get('salary_unit')
+    strength = data.get('strength')
+    tags = data.get('tags')
+    talents = data.get('talents')
+    title = data.get('title')
+
+    exist_item = TpItem.query.filter_by(user_id=userId, title=title, type=type).first()
+    if exist_item:
+        exist_item.citys = citys
+        exist_item.experience = experience
+        exist_item.hz_start_time = hz_start_time
+        exist_item.hz_end_time = hz_end_time
+        exist_item.post = post
+        exist_item.property = property
+        exist_item.remark = remark
+        exist_item.salary = salary
+        exist_item.salary_unit = salary_unit
+        exist_item.strength = strength
+        exist_item.tags = tags
+        exist_item.talents = talents
+        exist_item.title = title
+    else:
+        new_item = TpItem(
+            user_id=userId,
+            type=type,
+            citys=citys,
+            experience=experience,
+            hz_start_time=hz_start_time,
+            hz_end_time=hz_end_time,
+            post=post,
+            property=property,
+            remark=remark,
+            salary=salary,
+            salary_unit=salary_unit,
+            strength=strength,
+            tags=tags,
+            talents=talents,
+            title=title
+        )
+        db.session.add(new_item)
+    db.session.commit()
+    return jsonify({
+        "status": 200,
+        "message": "项目新增 / 修改成功",
+    })
