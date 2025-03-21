@@ -174,6 +174,7 @@ class TpItem(db.Model):
     __tablename__ = 'tp_items'
     id = db.Column(db.BigInteger, primary_key=True)
     user_id = db.Column(db.Integer, server_default=db.FetchedValue())
+    # 项目：1 / 简历：2
     type = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
     title = db.Column(db.String(255))
     birthday = db.Column(db.String(255))
@@ -195,14 +196,14 @@ class TpItem(db.Model):
     reason = db.Column(db.String(255))
     check_time = db.Column(db.Integer, server_default=db.FetchedValue())
     refuse_time = db.Column(db.Integer, server_default=db.FetchedValue())
-    add_time = db.Column(db.Integer, nullable=False)
+    add_time = db.Column(db.Integer, nullable=True)
     update_time = db.Column(db.Integer)
     cooperator1_id = db.Column(db.Integer)
     cooperator2_id = db.Column(db.Integer)
     cooperator3_id = db.Column(db.Integer)
     cooperator4_id = db.Column(db.Integer)
     cooperator5_id = db.Column(db.Integer)
-    is_evaluated = db.Column(db.Boolean, nullable=False)
+    is_evaluated = db.Column(db.Boolean, nullable=False, default=False)
 
     def to_json(self):
         data = {
