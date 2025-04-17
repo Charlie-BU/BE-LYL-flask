@@ -487,6 +487,7 @@ def edit_user_resume():
         exist_item.strength = strength
         exist_item.tags = tags
         exist_item.talents = talents
+        exist_item.status = -1
     else:
         new_item = TpItem(
             user_id=userId,
@@ -503,7 +504,8 @@ def edit_user_resume():
             sex=sex,
             strength=strength,
             tags=tags,
-            talents=talents
+            talents=talents,
+            status=-1
         )
         db.session.add(new_item)
     db.session.commit()
