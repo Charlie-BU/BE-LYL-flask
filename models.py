@@ -191,6 +191,7 @@ class TpItem(db.Model):
     strength = db.Column(db.Text)
     experience = db.Column(db.Text)
     remark = db.Column(db.Text)
+    # -1：审核中/2：驳回/3：启用/4：停用
     status = db.Column(db.Integer, server_default=db.FetchedValue())
     refresh_time = db.Column(db.Integer, nullable=False, server_default=db.FetchedValue())
     reason = db.Column(db.String(255))
