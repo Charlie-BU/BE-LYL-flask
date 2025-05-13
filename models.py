@@ -1,5 +1,9 @@
 # coding: utf-8
+import re
 from datetime import datetime
+
+from sqlalchemy import ForeignKey
+
 from exts import db
 
 
@@ -508,6 +512,9 @@ class TpUser(db.Model):
     active_score = db.Column(db.Integer, nullable=False, default=100)
     cooperation_evaluate_score = db.Column(db.Float, nullable=False, default=5)
     star_as_elite = db.Column(db.Float, nullable=True, default=0)
+    # 当前购买服务包
+    bought_service_pkg_id = db.Column(db.Integer, db.ForeignKey("service_pkg.id"), nullable=True)
+    bought_service_pkg = db.relationship("ServicePkg", backref="buyers")
 
 
 class TpVoucher(db.Model):
@@ -700,3 +707,52 @@ class AccessToken(db.Model):
     access_token = db.Column(db.String(200), nullable=False)
     update_time = db.Column(db.DateTime, default=datetime.now)
     expires_in = db.Column(db.Integer, nullable=False)
+
+
+# 服务包
+class ServicePkg(db.Model):
+    __tablename__ = 'service_pkg'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(200), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    # 鉴于该版本MySQL不支持JSON格式，这里使用字符串拼接，使用/&/作为分隔符
+    features = db.Column(db.Text, nullable=False)
+
+    @staticmethod
+    def concatenate_features(features: list[str]) -> str:
+        return "/&/".join(features)
+
+    def to_json(self):
+        features = []
+        if self.features:
+            features = re.split(r"/&/", str(self.features))
+        data = {
+            "id": self.id,
+            "name": self.name,
+            "price": self.price,
+            "description": self.description,
+            "features": features,
+        }
+        return data
+
+
+# 服务包-人才
+class Service_talent(db.Model):
+    __tablename__ = 'service_talent'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('service_pkg.id'))
+    service = db.relationship('ServicePkg', backref="service_talents")
+    talent_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
+    talent = db.relationship('TpUser', backref="service_talents")
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "service_id": self.service_id,
+            "service_name": self.service.name,
+            "talent_id": self.talent_id,
+            "talent_realname": self.talent.realname if self.talent else None,
+            "talent_nickname": self.talent.nickname if self.talent else None,
+        }
+        return data

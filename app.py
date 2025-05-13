@@ -10,6 +10,7 @@ from models import *
 from schedule_tasks import *
 from bluePrints.user import bp as user_bp
 from bluePrints.application import bp as application_bp
+from bluePrints.service import bp as service_bp
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,7 @@ app.config.from_object(config)
 # 注册蓝图
 app.register_blueprint(user_bp)
 app.register_blueprint(application_bp)
+app.register_blueprint(service_bp)
 # 绑定数据库
 db.init_app(app)
 migrate = Migrate(app, db)
