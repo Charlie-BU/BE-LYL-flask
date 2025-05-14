@@ -6,6 +6,7 @@ from sqlalchemy import and_, or_
 from hooks import *
 from config import *
 from models import TpUser
+from wxpay import WxPay
 
 bp = Blueprint("service", __name__, url_prefix="/service")
 
@@ -280,6 +281,128 @@ def get_talents_by_service():
         return jsonify({
             "status": 200,
             "serviceTalents": serviceTalents,
+            "message": "查询成功"
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "status": 500,
+            "message": "查询失败"
+        })
+
+
+# 发起支付
+@bp.route('/create_pay', methods=['POST'])
+def create_pay():
+    data = request.json
+    pay_data = {
+        'body': data['description'],  # 商品描述
+        'attach': data['attach'],  # 附加数据
+        'total_fee': int(data['amount'] * 100),  # 金额，单位为分
+        'openid': data['openid'],
+    }
+    wxpay = WxPay(pay_data)
+    pay_info = wxpay.get_pay_info()
+    if pay_info:
+        return jsonify(pay_info)
+    return jsonify({
+        "status": -1,
+        "message": "支付请求发起失败"
+    })
+
+
+@bp.route("/buy_service", methods=["POST"])
+def buy_service():
+    # 获取请求参数
+    data = request.json
+    service_id = data.get('service_id')
+    buyer_id = data.get('buyer_id')
+    # 参数验证
+    if not service_id or not buyer_id:
+        return jsonify({
+            'status': 400,
+            'message': '参数错误'
+        })
+    try:
+        service = ServicePkg.query.get(service_id)
+        if not service:
+            return jsonify({
+                "status": -1,
+                "message": "未找到服务包"
+            })
+        buyer = TpUser.query.get(buyer_id)
+        if not buyer:
+            return jsonify({
+                "status": -2,
+                "message": "未找到买方用户"
+            })
+        if buyer.bought_service_pkg_id is not None:
+            return jsonify({
+                "status": -3,
+                "message": "您当前已购买服务包，请完成合作后再次购买"
+            })
+        buyer.bought_service_pkg_id = service_id
+        db.session.commit()
+        return jsonify({
+            'status': 200,
+            'message': '服务包购买成功'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 500,
+            'message': '服务器错误'
+        })
+
+
+@bp.route("/get_service_I_bought", methods=["POST"])
+def get_service_I_bought():
+    data = request.get_json()
+    my_id = data.get('my_id')
+    try:
+        me = TpUser.query.get(my_id)
+        service_I_bought = me.bought_service_pkg
+        if service_I_bought:
+            # 获取分配的人才
+            service_talents = Service_talent.query.filter(Service_talent.service_id == service_I_bought.id).all()
+            serviceTalents = []
+            for service_talent in service_talents:
+                talent = service_talent.talent
+                serviceTalents.append({
+                    "id": talent.user_id,
+                    "name": talent.realname,
+                    "phone": talent.mobile,
+                    "star_as_elite": talent.star_as_elite,
+                })
+            service_I_bought = service_I_bought.to_json()
+            service_I_bought["talents"] = serviceTalents
+        return jsonify({
+            "status": 200,
+            "service": service_I_bought if service_I_bought else None,
+            "message": "查询成功"
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "status": 500,
+            "message": "查询失败"
+        })
+
+
+@bp.route("/get_his_resume_id", methods=["POST"])
+def get_his_resume_id():
+    data = request.get_json()
+    talent_id = data.get('talent_id')
+    try:
+        his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2, TpItem.status == 3).first()
+        if not his_resume:
+            return jsonify({
+                "status": -1,
+                "message": "该人才未上传简历或简历未通过审核"
+            })
+        return jsonify({
+            "status": 200,
+            "resume_id": his_resume.id,
             "message": "查询成功"
         })
     except Exception as e:

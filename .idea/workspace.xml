@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="服务包1">
+    <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="服务包2">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bluePrints/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wxpay.py" beforeDir="false" afterPath="$PROJECT_DIR$/wxpay.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -286,7 +288,11 @@
       <workItem from="1744943011968" duration="6000" />
       <workItem from="1745031048483" duration="620000" />
       <workItem from="1745249768853" duration="670000" />
-      <workItem from="1747096282610" duration="12076000" />
+      <workItem from="1747096282610" duration="12533000" />
+      <workItem from="1747183345314" duration="11000" />
+      <workItem from="1747183713426" duration="598000" />
+      <workItem from="1747207669700" duration="2187000" />
+      <workItem from="1747209890292" duration="5749000" />
     </task>
     <task id="LOCAL-00001" summary="chore">
       <option name="closed" value="true" />
@@ -608,7 +614,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747107125073</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="服务包2">
+      <option name="closed" value="true" />
+      <created>1747119106259</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1747119106259</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -620,12 +634,13 @@
     <MESSAGE value="2.3.2" />
     <MESSAGE value="2.3.4" />
     <MESSAGE value="服务包1" />
-    <option name="LAST_COMMIT_MESSAGE" value="服务包1" />
+    <MESSAGE value="服务包2" />
+    <option name="LAST_COMMIT_MESSAGE" value="服务包2" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/BE_LYL_flask$BE_LYL_flask.coverage" NAME="BE-LYL-flask 覆盖结果" MODIFIED="1731464667565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/BE_flask$BE_TJTT.coverage" NAME="BE-TJTT 覆盖结果" MODIFIED="1730274246694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/BE_LYL_flask$Liyilian.coverage" NAME="Liyilian Coverage Results" MODIFIED="1747116627597" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/BE_LYL_flask$Liyilian.coverage" NAME="Liyilian Coverage Results" MODIFIED="1747210253525" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/BE_LYL_flask$test.coverage" NAME="test Coverage Results" MODIFIED="1736649638717" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../Python" />
     <SUITE FILE_PATH="coverage/BE_flask$Liyilian.coverage" NAME="Liyilian 覆盖结果" MODIFIED="1730274315559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/BE_TJTT$Flask.coverage" NAME="Flask 覆盖结果" MODIFIED="1728977180516" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

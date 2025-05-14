@@ -44,7 +44,7 @@ class WxPay(object):
         self.mch_id = MCH_ID  # 商户号
         self.notify_url = NOTIFY_URL  # 通知地址
         self.spbill_create_ip = socket.gethostbyname(socket.gethostname())  # 获取本机ip
-        self.merchant_key = MERCHANT_KEY  # 商户KEY，修改为自己的
+        self.merchant_key = MERCHANT_KEY  # 商户KEY
         self.pay_data = pay_data
 
     # 生成签名
@@ -66,7 +66,7 @@ class WxPay(object):
             'nonce_str': get_nonce_str(),  # 随机字符串
             'body': self.pay_data.get('body'),  # 商品描述
             'out_trade_no': str(int(time.time())),  # 商户订单号
-            'total_fee': self.pay_data.get('total_fee'),  # 订单总金额，单位为分
+            'total_fee': int(self.pay_data.get('total_fee')),  # 订单总金额，单位为分
             'spbill_create_ip': self.spbill_create_ip,  # 终端 IP
             'notify_url': self.notify_url,  # 通知地址
             'trade_type': 'JSAPI',  # 交易类型，小程序 JSAPI
@@ -86,7 +86,8 @@ class WxPay(object):
         if err_code_des:
             return {'code': 40001, 'msg': err_code_des}
         prepay_id = res.get('prepay_id')
-
+        if not prepay_id:
+            return {'code': -1, 'msg': res.get('return_msg')}
         return self.re_sign(post_data, prepay_id)
 
     # 再次对返回的数据签名
@@ -95,7 +96,7 @@ class WxPay(object):
             'appId': self.appid,  # 注意大小写与统一下单不一致
             'timeStamp': post_data.get('out_trade_no'),
             'nonceStr': post_data.get('nonce_str'),
-            'package': 'prepay_id={0}'.format(prepay_id),
+            'package': f'prepay_id={prepay_id}',
             'signType': 'MD5',
         }
         pay_sign = self.create_sign(pay_sign_data)
