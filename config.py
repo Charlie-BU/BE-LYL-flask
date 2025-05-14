@@ -25,9 +25,9 @@ APPID = "wx89661193f664f803"
 APPSECRET = "69fd5a49894dc45b242f48a2ea3afc4f"
 
 # 微信支付配置
-MCH_ID = ''                                   # 商户号
-NOTIFY_URL = ''     # 通知地址
-MERCHANT_KEY = ''       # 商户KEY
+MCH_ID = '1692701590'             # 商户号
+NOTIFY_URL = '/notify'         # 通知地址（这个虽然没用，但必须要有）
+MERCHANT_KEY = 'Tjtt2024Tjtt2024Tjtt2024Tjtt2024'       # 商户KEY
 # TRADE_TYPE = 'JSAPI'                                    # 交易类型
 
 
