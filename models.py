@@ -512,9 +512,9 @@ class TpUser(db.Model):
     active_score = db.Column(db.Integer, nullable=False, default=100)
     cooperation_evaluate_score = db.Column(db.Float, nullable=False, default=5)
     star_as_elite = db.Column(db.Float, nullable=True, default=0)
-    # 当前购买服务包
-    bought_service_pkg_id = db.Column(db.Integer, db.ForeignKey("service_pkg.id"), nullable=True)
-    bought_service_pkg = db.relationship("ServicePkg", backref="buyers")
+    # # 当前购买服务包（弃用：改为中间表）
+    # bought_service_pkg_id = db.Column(db.Integer, db.ForeignKey("service_pkg.id"), nullable=True)
+    # bought_service_pkg = db.relationship("ServicePkg", backref="buyers")
 
 
 class TpVoucher(db.Model):
@@ -734,6 +734,20 @@ class ServicePkg(db.Model):
             "description": self.description,
             "features": features,
         }
+        if self.service_talents:
+            data["talents"] = [{
+                "id": service_talent.talent.user_id,
+                "name": service_talent.talent.realname,
+                "phone": service_talent.talent.mobile,
+                "star_as_elite": service_talent.talent.star_as_elite,
+            } for service_talent in self.service_talents if service_talent.talent]
+        if self.service_buyers:
+            data["buyers"] = [{
+                "id": service_buyer.buyer.user_id,
+                "name": service_buyer.buyer.firm_name,
+                "phone": service_buyer.buyer.mobile,
+                "star_as_elite": service_buyer.buyer.star_as_elite,
+            } for service_buyer in self.service_buyers if service_buyer.buyer]
         return data
 
 
@@ -754,5 +768,29 @@ class Service_talent(db.Model):
             "talent_id": self.talent_id,
             "talent_realname": self.talent.realname if self.talent else None,
             "talent_nickname": self.talent.nickname if self.talent else None,
+        }
+        return data
+
+
+# 服务包-买方
+class Service_buyer(db.Model):
+    __tablename__ = 'service_buyer'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('service_pkg.id'))
+    service = db.relationship('ServicePkg', backref="service_buyers")
+    buyer_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
+    buyer = db.relationship('TpUser', backref="service_buyers")
+    # 数量
+    amount = db.Column(db.Integer, nullable=False)
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "service_id": self.service_id,
+            "service_name": self.service.name,
+            "buyer_id": self.buyer_id,
+            "buyer_firmname": self.buyer.firm_name if self.buyer else None,
+            "buyer_nickname": self.buyer.nickname if self.buyer else None,
+            "amount": self.amount,
         }
         return data
