@@ -21,6 +21,28 @@ def get_all_services():
     })
 
 
+@bp.route("/get_service_by_id", methods=["POST"])
+def get_service_by_id():
+    data = request.get_json()
+    try:
+        service = ServicePkg.query.get(data["id"])
+        if not service:
+            return jsonify({
+                "status": -1,
+                "message": "服务包不存在"
+            })
+        return jsonify({
+            "status": 200,
+            "service": service.to_json()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "status": 500,
+            "message": "数据获取失败"
+        })
+
+
 @bp.route("/get_my_services", methods=["POST"])
 def get_my_services():
     talent_id = request.json.get("talent_id")
@@ -28,7 +50,8 @@ def get_my_services():
     services = []
     for service_talent in service_talents:
         service = service_talent.service
-        services.append(service.to_json())
+        if service:
+            services.append(service.to_json())
     return jsonify({
         "status": 200,
         "services": services
@@ -317,6 +340,7 @@ def buy_service():
     data = request.json
     service_id = data.get('service_id')
     buyer_id = data.get('buyer_id')
+    amount = data.get('amount', 1)
     # 参数验证
     if not service_id or not buyer_id:
         return jsonify({
@@ -336,12 +360,8 @@ def buy_service():
                 "status": -2,
                 "message": "未找到买方用户"
             })
-        if buyer.bought_service_pkg_id is not None:
-            return jsonify({
-                "status": -3,
-                "message": "您当前已购买服务包，请完成合作后再次购买"
-            })
-        buyer.bought_service_pkg_id = service_id
+        service_buyer = Service_buyer(service_id=service_id, buyer_id=buyer_id, amount=amount)
+        db.session.add(service_buyer)
         db.session.commit()
         return jsonify({
             'status': 200,
@@ -360,25 +380,19 @@ def get_service_I_bought():
     data = request.get_json()
     my_id = data.get('my_id')
     try:
-        me = TpUser.query.get(my_id)
-        service_I_bought = me.bought_service_pkg
-        if service_I_bought:
-            # 获取分配的人才
-            service_talents = Service_talent.query.filter(Service_talent.service_id == service_I_bought.id).all()
-            serviceTalents = []
-            for service_talent in service_talents:
-                talent = service_talent.talent
-                serviceTalents.append({
-                    "id": talent.user_id,
-                    "name": talent.realname,
-                    "phone": talent.mobile,
-                    "star_as_elite": talent.star_as_elite,
-                })
-            service_I_bought = service_I_bought.to_json()
-            service_I_bought["talents"] = serviceTalents
+        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id).all()
+        services_I_bought = [(ServicePkg.query.get(service_buyer.service_id), service_buyer.amount) for service_buyer in
+                             sevice_buyers]
+        if not services_I_bought:
+            return jsonify({
+                "status": 200,
+                "services": [],
+                "message": "查询成功，当前未购买服务包"
+            })
+        services_I_bought = [[service[0].to_json(), {"amount": service[1]}] for service in services_I_bought]
         return jsonify({
             "status": 200,
-            "service": service_I_bought if service_I_bought else None,
+            "services": services_I_bought,
             "message": "查询成功"
         })
     except Exception as e:
