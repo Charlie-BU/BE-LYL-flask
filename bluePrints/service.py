@@ -2,6 +2,7 @@ import base64
 import os, oss2
 import time
 from flask import Blueprint, request, jsonify, session
+from oss2 import Service
 from sqlalchemy import and_, or_
 from hooks import *
 from config import *
@@ -11,9 +12,29 @@ from wxpay import WxPay
 bp = Blueprint("service", __name__, url_prefix="/service")
 
 
+@bp.route("/get_service_categories", methods=["POST"])
+def get_service_categories():
+    categoires = ServiceCategory.query.all()
+    categories = [category.to_json() for category in categoires]
+    return jsonify({
+        "status": 200,
+        "categories": categories,
+        "message": "服务包种类获取成功",
+    })
+
+
 @bp.route("/get_all_services", methods=["POST"])
 def get_all_services():
-    services = ServicePkg.query.all()
+    data = request.json
+    category_id = data.get("category_id", None)
+    try:
+        category_id = int(category_id)
+    except Exception as e:
+        category_id = None
+    if category_id:
+        services = ServicePkg.query.filter(ServicePkg.category_id == category_id).all()
+    else:
+        services = ServicePkg.query.all()
     services = [service.to_json() for service in services]
     return jsonify({
         "status": 200,
@@ -113,7 +134,8 @@ def add_service():
             name=data.get('name'),
             price=price,
             description=data.get('description'),
-            features=ServicePkg.concatenate_features(data.get('features'))
+            features=ServicePkg.concatenate_features(data.get('features')),
+            category_id=data.get('category_id'),
         )
 
         db.session.add(new_service)
@@ -389,10 +411,14 @@ def get_service_I_bought():
                 "services": [],
                 "message": "查询成功，当前未购买服务包"
             })
-        services_I_bought = [[service[0].to_json(), {"amount": service[1]}] for service in services_I_bought]
+        services = []
+        for service in services_I_bought:
+            service_dict = service[0].to_json()
+            service_dict["amount"] = service[1]
+            services.append(service_dict)
         return jsonify({
             "status": 200,
-            "services": services_I_bought,
+            "services": services,
             "message": "查询成功"
         })
     except Exception as e:
