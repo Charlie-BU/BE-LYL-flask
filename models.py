@@ -718,6 +718,9 @@ class ServicePkg(db.Model):
     description = db.Column(db.Text, nullable=False)
     # 鉴于该版本MySQL不支持JSON格式，这里使用字符串拼接，使用/&/作为分隔符
     features = db.Column(db.Text, nullable=False)
+    # 类别：0为无分类
+    category_id = db.Column(db.Integer, db.ForeignKey('service_category.id'))
+    category = db.relationship('ServiceCategory', backref="services")
 
     @staticmethod
     def concatenate_features(features: list[str]) -> str:
@@ -733,6 +736,8 @@ class ServicePkg(db.Model):
             "price": self.price,
             "description": self.description,
             "features": features,
+            "category_id": self.category_id,
+            "category_name": self.category.name if self.category else "无分类",
         }
         if self.service_talents:
             data["talents"] = [{
@@ -748,6 +753,19 @@ class ServicePkg(db.Model):
                 "phone": service_buyer.buyer.mobile,
                 "star_as_elite": service_buyer.buyer.star_as_elite,
             } for service_buyer in self.service_buyers if service_buyer.buyer]
+        return data
+
+
+class ServiceCategory(db.Model):
+    __tablename__ = 'service_category'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(200), nullable=False)
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "name": self.name,
+        }
         return data
 
 
