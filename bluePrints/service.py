@@ -174,6 +174,12 @@ def delete_service():
                 "message": "服务包不存在"
             })
 
+        if service.service_talents:
+            for talent in service.service_talents:
+                db.session.delete(talent)
+        if service.service_buyers:
+            for buyer in service.service_buyers:
+                db.session.delete(buyer)
         db.session.delete(service)
         db.session.commit()
 
@@ -403,25 +409,32 @@ def get_service_I_bought():
     my_id = data.get('my_id')
     try:
         sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id).all()
-        services_I_bought = [(ServicePkg.query.get(service_buyer.service_id), service_buyer.amount) for service_buyer in
-                             sevice_buyers]
-        if not services_I_bought:
-            return jsonify({
-                "status": 200,
-                "services": [],
-                "message": "查询成功，当前未购买服务包"
-            })
         services = []
-        for service in services_I_bought:
-            service_dict = service[0].to_json()
-            service_dict["amount"] = service[1]
-            services.append(service_dict)
+        for service_buyer in sevice_buyers:
+            service = ServicePkg.query.get(service_buyer.service_id)
+            if service:
+                service_dict = service.to_json()
+                service_dict["amount"] = service_buyer.amount
+                # 必须携带service_buyer.id，否则当一人先后多个相同服务包则无法区分
+                service_dict["service_buyer_id"] = service_buyer.id
+                service_dict["coop_talent_id"] = service_buyer.coop_talent_id
+                # 若已确认合作，则只显示合作人才
+                if service_buyer.coop_talent_id:
+                    coop_talent = TpUser.query.get(service_buyer.coop_talent_id)
+                    service_dict["talents"] = [{
+                        "id": service_buyer.coop_talent_id,
+                        "name": coop_talent.realname,
+                        "phone": coop_talent.mobile,
+                        "star_as_elite": coop_talent.star_as_elite,
+                    }]
+                services.append(service_dict)
         return jsonify({
             "status": 200,
             "services": services,
             "message": "查询成功"
         })
     except Exception as e:
+        print(e)
         db.session.rollback()
         return jsonify({
             "status": 500,
@@ -450,4 +463,155 @@ def get_his_resume_id():
         return jsonify({
             "status": 500,
             "message": "查询失败"
+        })
+
+
+@bp.route("/confirm_cooperate", methods=["POST"])
+def confirm_cooperate():
+    data = request.json
+    service_id = data.get('service_id')
+    talent_id = data.get('talent_id')
+    service_buyer_id = data.get('service_buyer_id')
+    # 参数验证
+    if not service_id or not talent_id or not service_buyer_id:
+        return jsonify({
+            'status': 400,
+            'message': '参数错误'
+        })
+
+    try:
+        service_buyer = Service_buyer.query.get(service_buyer_id)
+        if not service_buyer:
+            return jsonify({
+                "status": -1,
+                "message": "交易不存在"
+            })
+        if service_buyer.service_id != service_id:
+            return jsonify({
+                "status": -2,
+                "message": "交易错误"
+            })
+        if service_buyer.coop_talent_id:
+            return jsonify({
+                "status": -3,
+                "message": "该服务包已确认合作"
+            })
+        talent = TpUser.query.get(talent_id)
+        if not talent.is_online:
+            return jsonify({
+                "status": -4,
+                "message": "该人才暂不可接服务套餐"
+            })
+        service_buyer.coop_talent_id = talent_id
+        db.session.commit()
+        return jsonify({
+            'status': 200,
+            'message': '确认合作成功'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 500,
+            'message': '服务器错误'
+        })
+
+
+@bp.route("/finish_cooperate", methods=["POST"])
+def finish_cooperate():
+    data = request.json
+    service_id = data.get('service_id')
+    talent_id = data.get('talent_id')
+    service_buyer_id = data.get('service_buyer_id')
+    # 参数验证
+    if not service_id or not talent_id or not service_buyer_id:
+        return jsonify({
+            'status': 400,
+            'message': '参数错误'
+        })
+    try:
+        service_buyer = Service_buyer.query.get(service_buyer_id)
+        if not service_buyer:
+            return jsonify({
+                "status": -1,
+                "message": "交易不存在"
+            })
+        if service_buyer.service_id != service_id:
+            return jsonify({
+                "status": -2,
+                "message": "交易错误"
+            })
+        if not service_buyer.coop_talent_id:
+            return jsonify({
+                "status": -3,
+                "message": "该服务包尚未确认合作"
+            })
+        finished_service_buyer = Finished_service_buyer(id=service_buyer.id,
+                                                        service_id=service_buyer.service_id,
+                                                        buyer_id=service_buyer.buyer_id,
+                                                        amount=service_buyer.amount,
+                                                        coop_talent_id=service_buyer.coop_talent_id,
+                                                        )
+        db.session.add(finished_service_buyer)
+        db.session.delete(service_buyer)
+        db.session.commit()
+        return jsonify({
+            'status': 200,
+            'message': '完成合作成功'
+        })
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return jsonify({
+            'status': 500,
+            'message': '服务器错误'
+        })
+
+
+@bp.route("/get_talent_online", methods=["POST"])
+def get_talent_online():
+    data = request.json
+    talent_id = data.get('talent_id')
+    try:
+        talent = TpUser.query.get(talent_id)
+        if not talent:
+            return jsonify({
+                "status": -1,
+                "message": "用户不存在"
+            })
+        return jsonify({
+            'status': 200,
+            "is_online": talent.is_online,
+            'message': '状态获取成功'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 500,
+            'message': '服务器错误'
+        })
+
+
+@bp.route("/talent_online_change", methods=["POST"])
+def talent_online_change():
+    data = request.json
+    is_online = data.get('is_online')
+    talent_id = data.get('talent_id')
+    try:
+        talent = TpUser.query.get(talent_id)
+        if not talent:
+            return jsonify({
+                "status": -1,
+                "message": "用户不存在"
+            })
+        talent.is_online = is_online
+        db.session.commit()
+        return jsonify({
+            'status': 200,
+            'message': '状态切换成功'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            'status': 500,
+            'message': '服务器错误'
         })
