@@ -745,14 +745,23 @@ class ServicePkg(db.Model):
                 "name": service_talent.talent.realname,
                 "phone": service_talent.talent.mobile,
                 "star_as_elite": service_talent.talent.star_as_elite,
+                "is_online": service_talent.talent.is_online,
             } for service_talent in self.service_talents if service_talent.talent]
-        if self.service_buyers:
-            data["buyers"] = [{
-                "id": service_buyer.buyer.user_id,
-                "name": service_buyer.buyer.firm_name,
-                "phone": service_buyer.buyer.mobile,
-                "star_as_elite": service_buyer.buyer.star_as_elite,
-            } for service_buyer in self.service_buyers if service_buyer.buyer]
+        # if self.service_buyers:
+        #     buyers = [{
+        #         "id": service_buyer.buyer.user_id,
+        #         "name": service_buyer.buyer.firm_name,
+        #         "phone": service_buyer.buyer.mobile,
+        #         "star_as_elite": service_buyer.buyer.star_as_elite,
+        #     } for service_buyer in self.service_buyers if service_buyer.buyer]
+        #     # 去重
+        #     seen = set()
+        #     unique_buyers = []
+        #     for buyer in buyers:
+        #         if buyer["id"] not in seen:
+        #             seen.add(buyer["id"])
+        #             unique_buyers.append(buyer)
+        #     data["buyers"] = unique_buyers
         return data
 
 
@@ -790,7 +799,7 @@ class Service_talent(db.Model):
         return data
 
 
-# 服务包-买方
+# 服务包-买方（一次交易）
 class Service_buyer(db.Model):
     __tablename__ = 'service_buyer'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -800,6 +809,14 @@ class Service_buyer(db.Model):
     buyer = db.relationship('TpUser', backref="service_buyers")
     # 数量
     amount = db.Column(db.Integer, nullable=False)
+    # 合作人才
+    coop_talent_id = db.Column(db.Integer, nullable=True)
+    @property
+    def coop_talent_name(self):
+        if self.coop_talent_id:
+            coop_talent = TpUser.query.get(self.coop_talent_id)
+            return coop_talent.realname if coop_talent else ""
+        return ""
 
     def to_json(self):
         data = {
@@ -810,5 +827,41 @@ class Service_buyer(db.Model):
             "buyer_firmname": self.buyer.firm_name if self.buyer else None,
             "buyer_nickname": self.buyer.nickname if self.buyer else None,
             "amount": self.amount,
+            "coop_talent_id": self.coop_talent_id,
+            "coop_talent_name": self.coop_talent_name,
+        }
+        return data
+
+
+# 完成的交易
+class Finished_service_buyer(db.Model):
+    __tablename__ = 'finished_service_buyer'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    service_id = db.Column(db.Integer, db.ForeignKey('service_pkg.id'))
+    service = db.relationship('ServicePkg', backref="finished_service_buyers")
+    buyer_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
+    buyer = db.relationship('TpUser', backref="finished_service_buyers")
+    # 数量
+    amount = db.Column(db.Integer, nullable=False)
+    # 合作人才
+    coop_talent_id = db.Column(db.Integer, nullable=True)
+    @property
+    def coop_talent_name(self):
+        if self.coop_talent_id:
+            coop_talent = TpUser.query.get(self.coop_talent_id)
+            return coop_talent.realname if coop_talent else ""
+        return ""
+
+    def to_json(self):
+        data = {
+            "id": self.id,
+            "service_id": self.service_id,
+            "service_name": self.service.name,
+            "buyer_id": self.buyer_id,
+            "buyer_firmname": self.buyer.firm_name if self.buyer else None,
+            "buyer_nickname": self.buyer.nickname if self.buyer else None,
+            "amount": self.amount,
+            "coop_talent_id": self.coop_talent_id,
+            "coop_talent_name": self.coop_talent_name,
         }
         return data
