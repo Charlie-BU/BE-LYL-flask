@@ -1,6 +1,6 @@
 test = True
 # 数据库配置
-USERNAME = "Charlie"
+USERNAME = "liyilian"
 PASSWORD = "liyilian666"
 HOSTNAME = "101.132.24.99" if test else "localhost"
 PORT = 3306
@@ -19,15 +19,14 @@ MAIL_USERNAME = ""  # 发件邮箱
 MAIL_PASSWORD = ""  # 授权码
 MAIL_DEFAULT_SENDER = ""
 
-
 # 小程序配置
 APPID = "wx89661193f664f803"
 APPSECRET = "69fd5a49894dc45b242f48a2ea3afc4f"
 
 # 微信支付配置
-MCH_ID = '1692701590'             # 商户号
-NOTIFY_URL = '/notify'         # 通知地址（这个虽然没用，但必须要有）
-MERCHANT_KEY = 'Tjtt2024Tjtt2024Tjtt2024Tjtt2024'       # 商户KEY
+MCH_ID = '1692701590'  # 商户号
+NOTIFY_URL = '/notify'  # 通知地址（这个虽然没用，但必须要有）
+MERCHANT_KEY = 'Tjtt2024Tjtt2024Tjtt2024Tjtt2024'  # 商户KEY
 # TRADE_TYPE = 'JSAPI'                                    # 交易类型
 
 
@@ -35,4 +34,4 @@ MERCHANT_KEY = 'Tjtt2024Tjtt2024Tjtt2024Tjtt2024'       # 商户KEY
 OSS_ACCESS_KEY_ID = 'LTAI5tRmNY2Aa1MZb1PK49Hg'
 OSS_ACCESS_KEY_SECRET = 'd4GH1DVJKhEX4ZXY5lEVNEFP31sn3z'
 OSS_BUCKET_NAME = 'liyilian'
-OSS_ENDPOINT = 'oss-cn-hangzhou.aliyuncs.com'       # 不能带liyilian.*
+OSS_ENDPOINT = 'oss-cn-hangzhou.aliyuncs.com'  # 不能带liyilian.*
