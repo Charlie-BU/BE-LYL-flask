@@ -2,7 +2,8 @@
 import re
 from datetime import datetime
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, JSON
+from sqlalchemy.ext.mutable import MutableList
 
 from exts import db
 
@@ -721,6 +722,7 @@ class ServicePkg(db.Model):
     # 类别：0为无分类
     category_id = db.Column(db.Integer, db.ForeignKey('service_category.id'))
     category = db.relationship('ServiceCategory', backref="services")
+    images = db.Column(MutableList.as_mutable(JSON()), nullable=True, default=[])
 
     @staticmethod
     def concatenate_features(features: list[str]) -> str:
@@ -738,6 +740,7 @@ class ServicePkg(db.Model):
             "features": features,
             "category_id": self.category_id,
             "category_name": self.category.name if self.category else "无分类",
+            "images": self.images,
         }
         if self.service_talents:
             data["talents"] = [{
@@ -747,21 +750,6 @@ class ServicePkg(db.Model):
                 "star_as_elite": service_talent.talent.star_as_elite,
                 "is_online": service_talent.talent.is_online,
             } for service_talent in self.service_talents if service_talent.talent]
-        # if self.service_buyers:
-        #     buyers = [{
-        #         "id": service_buyer.buyer.user_id,
-        #         "name": service_buyer.buyer.firm_name,
-        #         "phone": service_buyer.buyer.mobile,
-        #         "star_as_elite": service_buyer.buyer.star_as_elite,
-        #     } for service_buyer in self.service_buyers if service_buyer.buyer]
-        #     # 去重
-        #     seen = set()
-        #     unique_buyers = []
-        #     for buyer in buyers:
-        #         if buyer["id"] not in seen:
-        #             seen.add(buyer["id"])
-        #             unique_buyers.append(buyer)
-        #     data["buyers"] = unique_buyers
         return data
 
 

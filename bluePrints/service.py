@@ -46,17 +46,33 @@ def get_all_services():
 def get_service_by_id():
     data = request.get_json()
     try:
-        service = ServicePkg.query.get(data["id"])
+        service_id = data["id"]
+        service = ServicePkg.query.get(service_id)
         if not service:
             return jsonify({
                 "status": -1,
                 "message": "服务包不存在"
             })
+        service = service.to_json()
+        # 获取简历展示照片作为服务包展示照片
+        service["images"] = []
+        service_talents = Service_talent.query.filter(Service_talent.service_id == service_id).all()
+        for service_talent in service_talents:
+            talent_id = service_talent.talent_id
+            his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2, TpItem.status == 3).first()
+            if not his_resume:
+                continue
+            his_item_files = ItemFiles.query.get(his_resume.id)
+            for i in range(9):
+                if hasattr(his_item_files, f"file{i+1}") and getattr(his_item_files, f"file{i+1}") and getattr(his_item_files, f"file{i+1}").startswith("https"):
+                    service["images"].append(getattr(his_item_files, f"file{i+1}"))
+
         return jsonify({
             "status": 200,
-            "service": service.to_json()
+            "service": service
         })
     except Exception as e:
+        print(e)
         db.session.rollback()
         return jsonify({
             "status": 500,
@@ -418,6 +434,23 @@ def get_service_I_bought():
                 # 必须携带service_buyer.id，否则当一人先后多个相同服务包则无法区分
                 service_dict["service_buyer_id"] = service_buyer.id
                 service_dict["coop_talent_id"] = service_buyer.coop_talent_id
+
+                # 获取简历展示照片作为服务包展示照片
+                service_dict["images"] = []
+                service_talents = Service_talent.query.filter(Service_talent.service_id == service_buyer.service_id).all()
+                for service_talent in service_talents:
+                    talent_id = service_talent.talent_id
+                    his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2,
+                                                     TpItem.status == 3).first()
+                    if not his_resume:
+                        continue
+                    his_item_files = ItemFiles.query.get(his_resume.id)
+                    for i in range(9):
+                        if hasattr(his_item_files, f"file{i + 1}") and getattr(his_item_files,
+                                                                               f"file{i + 1}") and getattr(
+                                his_item_files, f"file{i + 1}").startswith("https"):
+                            service_dict["images"].append(getattr(his_item_files, f"file{i + 1}"))
+
                 # 若已确认合作，则只显示合作人才
                 if service_buyer.coop_talent_id:
                     coop_talent = TpUser.query.get(service_buyer.coop_talent_id)
@@ -615,3 +648,5 @@ def talent_online_change():
             'status': 500,
             'message': '服务器错误'
         })
+
+
