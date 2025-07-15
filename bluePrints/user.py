@@ -540,7 +540,7 @@ def register():
 
     # 创建新用户
     user = TpUser(
-        phone=phone,
+        mobile=phone,
         openid=openid,
         user_token=get_token(),
         is_kf=0,
@@ -551,6 +551,6 @@ def register():
     return jsonify({
         'status': 200,
         'message': "用户注册成功",
-        "user_id": user.id,
+        "user_id": user.user_id,
         "user_token": user.user_token
     })
