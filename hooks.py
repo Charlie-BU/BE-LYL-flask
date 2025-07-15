@@ -1,4 +1,8 @@
+import hashlib
 import json
+import random
+import string
+
 from config import APPID, APPSECRET
 from exts import db
 import requests
@@ -45,3 +49,62 @@ def get_rid_info(rid):
     res = requests.post(url=url, json={"rid": rid}, headers={'Content-Type': 'application/json'})
     print(res.text)
     return eval(res.text)['errmsg']
+
+
+# 解密微信手机号
+from Crypto.Cipher import AES
+import base64
+
+
+def encrypt(s):
+    return hashlib.md5(("ZHANGDADA" + s).encode()).hexdigest()
+
+
+# 生成用户token，对应PHP中的getToken函数
+def get_token():
+    # 字符集，包含大小写字母和数字
+    b = string.ascii_uppercase + string.ascii_lowercase + string.digits
+
+    while True:
+        # 生成9位不同的数字和字母
+        tmp = []
+        while len(tmp) < 9:
+            # 随机打乱字符集并取其中一个字符
+            chars = list(b)
+            random.shuffle(chars)
+            tmp.append(chars[random.randint(0, len(b) - 1)])
+            # 去重
+            tmp = list(set(tmp))
+
+        # 将字符列表连接成字符串
+        s = ''.join(tmp)
+        # 加密生成user_token
+        user_token = encrypt(s)
+
+        # 检查数据库中是否已存在相同的token
+        exists = TpUser.query.filter_by(user_token=user_token).first()
+        if not exists:
+            break
+
+    return user_token
+
+
+def _unpad(s):
+    # 微信加密数据使用的是 PKCS#7 padding
+    return s[:-s[-1]]
+
+
+def decrypt_wechat_data(encrypted_data, iv, session_key):
+    try:
+        encrypted_data = base64.b64decode(encrypted_data)
+        iv = base64.b64decode(iv)
+        session_key = base64.b64decode(session_key)
+
+        cipher = AES.new(session_key, AES.MODE_CBC, iv)
+        decrypted = cipher.decrypt(encrypted_data)
+        decrypted = _unpad(decrypted)  # 去除填充
+        decrypted = json.loads(decrypted.decode('utf-8'))
+        return decrypted
+    except Exception as e:
+        print("解密失败:", e)
+        return None

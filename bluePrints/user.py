@@ -3,6 +3,8 @@ import os, oss2
 import time
 from flask import Blueprint, request, jsonify
 from sqlalchemy import and_, or_
+
+from decorator import with_app_context
 from hooks import *
 from config import *
 from models import TpUser
@@ -512,4 +514,43 @@ def edit_user_resume():
     return jsonify({
         "status": 200,
         "message": "用户简历新增 / 修改成功",
+    })
+
+
+# 为解决php新用户注册问题，新加接口
+@bp.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    # 解密手机号
+    user_info = decrypt_wechat_data(
+        data['encryptedData'],
+        data['iv'],
+        data['session_key']
+    )
+    if not user_info:
+        return jsonify({'code': 400, 'msg': '解密手机号失败'})
+
+    phone = user_info['purePhoneNumber']
+    openid = data.get('xcx_openid')
+
+    # 查库确认是否已经存在用户
+    user = db.session.query(TpUser).filter_by(openid=openid).first()
+    if user:
+        return jsonify({'status': -1, 'message': "用户已注册"})
+
+    # 创建新用户
+    user = TpUser(
+        phone=phone,
+        openid=openid,
+        user_token=get_token(),
+        is_kf=0,
+    )
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({
+        'status': 200,
+        'message': "用户注册成功",
+        "user_id": user.id,
+        "user_token": user.user_token
     })
