@@ -90,21 +90,22 @@ def get_token():
 
 
 def _unpad(s):
-    # 微信加密数据使用的是 PKCS#7 padding
     return s[:-s[-1]]
 
 
-def decrypt_wechat_data(encrypted_data, iv, session_key):
+def decrypt_wechat_data(encrypted_data: str, iv: str, session_key: str):
     try:
+        session_key = base64.b64decode(session_key)
         encrypted_data = base64.b64decode(encrypted_data)
         iv = base64.b64decode(iv)
-        session_key = base64.b64decode(session_key)
 
         cipher = AES.new(session_key, AES.MODE_CBC, iv)
         decrypted = cipher.decrypt(encrypted_data)
-        decrypted = _unpad(decrypted)  # 去除填充
-        decrypted = json.loads(decrypted.decode('utf-8'))
-        return decrypted
+        decrypted = _unpad(decrypted)
+
+        decrypted_text = decrypted.decode('utf-8')
+
+        return json.loads(decrypted_text)
     except Exception as e:
-        print("解密失败:", e)
+        print("❌ 解密失败:", e)
         return None

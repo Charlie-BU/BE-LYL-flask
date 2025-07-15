@@ -541,9 +541,27 @@ def register():
     # 创建新用户
     user = TpUser(
         mobile=phone,
+        nickname=f"{phone[:3]}****{phone[-3:]}",
         openid=openid,
         user_token=get_token(),
         is_kf=0,
+        level=1,
+        balance=0,
+        reg_time=1710495495,
+        reid=0,
+        jt_id=0,
+        rekey="111111",
+        zt_num=0,
+        td_num=0,
+        lj_sign=0,
+        sign_money=0,
+        is_sign=0,
+        last_login=0,
+        last_ip="0",
+        kf_img="0",
+        kf_show=0,
+        active_score=0,
+        cooperation_evaluate_score=0,
     )
     db.session.add(user)
     db.session.commit()
@@ -553,4 +571,33 @@ def register():
         'message': "用户注册成功",
         "user_id": user.user_id,
         "user_token": user.user_token
+    })
+
+
+@bp.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    # 解密手机号
+    user_info = decrypt_wechat_data(
+        data['encryptedData'],
+        data['iv'],
+        data['session_key']
+    )
+    if not user_info:
+        return jsonify({'code': 400, 'msg': '解密手机号失败'})
+
+    phone = user_info['purePhoneNumber']
+    openid = data.get('xcx_openid')
+
+    # 查库确认是否已经存在用户
+    user = db.session.query(TpUser).filter_by(openid=openid, mobile=phone).first()
+    if not user:
+        return jsonify({'status': -1, 'message': "用户尚未注册"})
+
+    return jsonify({
+        'status': 200,
+        'message': "登录成功",
+        "user_id": user.user_id,
+        "user_token": user.user_token,
+        "is_kf": user.is_kf,
     })
