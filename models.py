@@ -473,7 +473,7 @@ class TpUserSign(db.Model):
 
 class TpUser(db.Model):
     __tablename__ = 'tp_users'
-    user_id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     password = db.Column(db.String(32), nullable=False, server_default=db.FetchedValue())
     paypwd = db.Column(db.String(32))
     head_pic = db.Column(db.String(255))
