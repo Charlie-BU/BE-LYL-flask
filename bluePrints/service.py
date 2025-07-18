@@ -10,6 +10,9 @@ from models import TpUser
 from wxpay import WxPay
 
 bp = Blueprint("service", __name__, url_prefix="/service")
+# 初始化阿里云OSS Bucket
+auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
+bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME)
 
 
 @bp.route("/get_service_categories", methods=["POST"])
@@ -54,18 +57,6 @@ def get_service_by_id():
                 "message": "服务包不存在"
             })
         service = service.to_json()
-        # 获取简历展示照片作为服务包展示照片
-        service["images"] = []
-        service_talents = Service_talent.query.filter(Service_talent.service_id == service_id).all()
-        for service_talent in service_talents:
-            talent_id = service_talent.talent_id
-            his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2, TpItem.status == 3).first()
-            if not his_resume:
-                continue
-            his_item_files = ItemFiles.query.get(his_resume.id)
-            for i in range(9):
-                if hasattr(his_item_files, f"file{i+1}") and getattr(his_item_files, f"file{i+1}") and getattr(his_item_files, f"file{i+1}").startswith("https"):
-                    service["images"].append(getattr(his_item_files, f"file{i+1}"))
 
         return jsonify({
             "status": 200,
@@ -118,8 +109,13 @@ def edit_service():
             })
         service.price = price
         service.description = data.get('description')
-        features = ServicePkg.concatenate_features(data.get('features'))
-        service.features = features
+        if data.get('features'):
+            features = ServicePkg.concatenate_features(data.get('features'))
+            service.features = features
+        service.profile_img = data.get('profile_img')
+        service.intro_img = data.get('intro_img')
+        service.rule_img = data.get('rule_img')
+        service.images = data.get('images')
         db.session.commit()
 
         return jsonify({
@@ -150,8 +146,12 @@ def add_service():
             name=data.get('name'),
             price=price,
             description=data.get('description'),
-            features=ServicePkg.concatenate_features(data.get('features')),
+            features=ServicePkg.concatenate_features(data.get('features')) if data.get('features') else None,
             category_id=data.get('category_id'),
+            profile_img=data.get('profile_img'),
+            intro_img=data.get('intro_img'),
+            rule_img=data.get('rule_img'),
+            images=data.get('images'),
         )
 
         db.session.add(new_service)
@@ -162,6 +162,7 @@ def add_service():
             "message": "添加成功"
         })
     except Exception as e:
+        print(e)
         db.session.rollback()
         return jsonify({
             "status": 500,
@@ -189,6 +190,22 @@ def delete_service():
                 "status": 404,
                 "message": "服务包不存在"
             })
+        prefix = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/'
+        try:
+            if service.profile_img:
+                bucket.delete_object(service.profile_img[len(prefix):])
+            if service.intro_img:
+                bucket.delete_object(service.intro_img[len(prefix):])
+            if service.rule_img:
+                bucket.delete_object(service.rule_img[len(prefix):])
+            if service.images and service.images != 0:
+                for image in service.images:
+                    try:
+                        bucket.delete_object(image[len(prefix):])
+                    except Exception:
+                        pass
+        except Exception:
+            pass
 
         if service.service_talents:
             for talent in service.service_talents:
@@ -649,4 +666,52 @@ def talent_online_change():
             'message': '服务器错误'
         })
 
+
+# 向阿里云OSS上传图片
+@bp.route('/upload_image_to_OSS', methods=['POST'])
+def upload_image_to_OSS():
+    if 'image' not in request.files:
+        return jsonify({
+            "message": "fail: no image",
+            "status": -1,
+        })
+    image = request.files['image']
+    type = request.form.get("type")
+    # 保存文件到临时路径
+    temp_dir = os.path.join(os.getcwd(), 'tmp')  # 在当前工作目录创建 'tmp' 文件夹
+    os.makedirs(temp_dir, exist_ok=True)
+    temp_path = os.path.join(temp_dir, image.filename)  # 构建临时文件路径
+    image.save(temp_path)
+    try:
+        match type:
+            case "profile_img":
+                oss_path = f'service-pkg/{type}/{image.filename}'  # 阿里云目录路径
+            case "intro_img":
+                oss_path = f'service-pkg/{type}/{image.filename}'
+            case "rule_img":
+                oss_path = f'service-pkg/{type}/{image.filename}'
+            case "images":
+                oss_path = f'service-pkg/{type}/{image.filename}'
+            case _:
+                return jsonify({
+                    "message": "fail: type not supported",
+                    "status": -2,
+                })
+        with open(temp_path, 'rb') as fileobj:
+            bucket.put_object(oss_path, fileobj)
+        # 获取文件URL
+        file_url = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/{oss_path}'
+        # 删除临时文件
+        os.remove(temp_path)
+        return jsonify({
+            "url": file_url,
+            "type": type,
+            "message": "success",
+            "status": 200,
+        })
+    except Exception as e:
+        return jsonify({
+            "message": f"fail: {str(e)}",
+            "status": -1,
+        })
 

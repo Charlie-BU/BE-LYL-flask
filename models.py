@@ -716,12 +716,16 @@ class ServicePkg(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(200), nullable=False)
     price = db.Column(db.Float, nullable=False)
-    description = db.Column(db.Text, nullable=False)
+    description = db.Column(db.Text, nullable=True)
     # 鉴于该版本MySQL不支持JSON格式，这里使用字符串拼接，使用/&/作为分隔符
-    features = db.Column(db.Text, nullable=False)
+    # 升级了，可以了
+    features = db.Column(db.Text, nullable=True)
     # 类别：0为无分类
     category_id = db.Column(db.Integer, db.ForeignKey('service_category.id'))
     category = db.relationship('ServiceCategory', backref="services")
+    profile_img = db.Column(db.Text)
+    intro_img = db.Column(db.Text)
+    rule_img = db.Column(db.Text)
     images = db.Column(MutableList.as_mutable(JSON()), nullable=True, default=[])
 
     @staticmethod
@@ -732,6 +736,8 @@ class ServicePkg(db.Model):
         features = []
         if self.features:
             features = re.split(r"/&/", str(self.features))
+        profile_img_thumb = self.profile_img if self.profile_img.endswith(
+            "?x-oss-process=image/resize,w_300") else self.profile_img + "?x-oss-process=image/resize,w_300"
         data = {
             "id": self.id,
             "name": self.name,
@@ -740,6 +746,9 @@ class ServicePkg(db.Model):
             "features": features,
             "category_id": self.category_id,
             "category_name": self.category.name if self.category else "无分类",
+            "profile_img": profile_img_thumb,
+            "intro_img": self.intro_img,
+            "rule_img": self.rule_img,
             "images": self.images,
         }
         if self.service_talents:
@@ -799,6 +808,7 @@ class Service_buyer(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     # 合作人才
     coop_talent_id = db.Column(db.Integer, nullable=True)
+
     @property
     def coop_talent_name(self):
         if self.coop_talent_id:
@@ -833,6 +843,7 @@ class Finished_service_buyer(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     # 合作人才
     coop_talent_id = db.Column(db.Integer, nullable=True)
+
     @property
     def coop_talent_name(self):
         if self.coop_talent_id:
