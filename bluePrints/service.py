@@ -45,6 +45,89 @@ def get_all_services():
     })
 
 
+@bp.route("/get_service_orders", methods=["POST"])
+def get_service_orders():
+    data = request.json
+    status = data.get("status")
+    user_id = data.get("user_id")
+    user = TpUser.query.get(user_id)
+    identity = data.get("identity")
+    match identity:
+        case 1:
+            query = Service_buyer.query.filter(Service_buyer.coop_talent_id == user_id)
+        case 2:
+            query = Service_buyer.query.filter(Service_buyer.buyer_id == user_id)
+        case 3:
+            query = Service_buyer.query
+        case _:
+            return jsonify({
+                "status": -1,
+                "message": "参数有误",
+            })
+    match status:
+        case "all":
+            services = query.order_by(Service_buyer.id.desc()).all()
+        case "pending":
+            services = query.filter(Service_buyer.coop_talent_id.is_(None)).order_by(Service_buyer.id.asc()).all()
+        case "processing":
+            services = query.filter(Service_buyer.buyer_id.isnot(None),
+                                    Service_buyer.coop_talent_id.isnot(None)).order_by(Service_buyer.id.asc()).all()
+        case "completed":
+            services = Finished_service_buyer.query.filter(
+                or_(Finished_service_buyer.buyer_id == user_id, Finished_service_buyer.coop_talent_id == user_id)).all()
+        case _:
+            return jsonify({
+                "status": -1,
+                "message": "参数有误",
+            })
+    orders = []
+    for service in services:
+        service_id = service.service_id
+        service_pkg = ServicePkg.query.get(service_id)
+        profile_img = service_pkg.profile_img
+        service_title = service_pkg.name
+        price = service_pkg.price
+        amount = service.amount
+
+        buyer_name = buyer_phone = talent_name = talent_phone = ""
+        buyer = TpUser.query.get(service.buyer_id)
+        if buyer:
+            buyer_name = buyer.firm_name if buyer.firm_name else buyer.nickname
+            buyer_phone = buyer.mobile
+        talent = TpUser.query.get(service.coop_talent_id)
+        if talent:
+            talent_name = talent.realname if talent.realname else talent.nickname
+            talent_phone = talent.mobile
+
+        res = {
+            "profile_img": profile_img,
+            "service_title": service_title,
+            "price": price,
+            "amount": amount,
+            "cooperator_id": "",
+            "cooperator_name": "",
+            "cooperator_phone": "",
+            "buyer_name": buyer_name,
+            "buyer_phone": buyer_phone,
+            "talent_name": talent_name,
+            "talent_phone": talent_phone,
+        }
+        if identity == 1:
+            res["cooperator_id"] = service.buyer_id
+            res["cooperator_name"] = buyer_name
+            res["cooperator_phone"] = buyer_phone
+        elif identity == 2:
+            res["cooperator_id"] = service.coop_talent_id
+            res["cooperator_name"] = talent_name
+            res["cooperator_phone"] = talent_phone
+        orders.append(res)
+    return jsonify({
+        "status": 200,
+        "message": "获取成功",
+        "orders": orders
+    })
+
+
 @bp.route("/get_service_by_id", methods=["POST"])
 def get_service_by_id():
     data = request.get_json()
@@ -454,7 +537,8 @@ def get_service_I_bought():
 
                 # 获取简历展示照片作为服务包展示照片
                 service_dict["images"] = []
-                service_talents = Service_talent.query.filter(Service_talent.service_id == service_buyer.service_id).all()
+                service_talents = Service_talent.query.filter(
+                    Service_talent.service_id == service_buyer.service_id).all()
                 for service_talent in service_talents:
                     talent_id = service_talent.talent_id
                     his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2,
@@ -465,7 +549,7 @@ def get_service_I_bought():
                     for i in range(9):
                         if hasattr(his_item_files, f"file{i + 1}") and getattr(his_item_files,
                                                                                f"file{i + 1}") and getattr(
-                                his_item_files, f"file{i + 1}").startswith("https"):
+                            his_item_files, f"file{i + 1}").startswith("https"):
                             service_dict["images"].append(getattr(his_item_files, f"file{i + 1}"))
 
                 # 若已确认合作，则只显示合作人才
@@ -714,4 +798,3 @@ def upload_image_to_OSS():
             "message": f"fail: {str(e)}",
             "status": -1,
         })
-
