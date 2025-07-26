@@ -73,8 +73,14 @@ def get_service_orders():
             services = query.filter(Service_buyer.buyer_id.isnot(None),
                                     Service_buyer.coop_talent_id.isnot(None)).order_by(Service_buyer.id.asc()).all()
         case "completed":
-            services = Finished_service_buyer.query.filter(
-                or_(Finished_service_buyer.buyer_id == user_id, Finished_service_buyer.coop_talent_id == user_id)).all()
+            completed_query = Finished_service_buyer.query.filter(Service_buyer.buyer_id.isnot(None),
+                                                                  Service_buyer.coop_talent_id.isnot(None))
+            if identity != 3:
+                services = completed_query.filter(
+                    or_(Finished_service_buyer.buyer_id == user_id,
+                        Finished_service_buyer.coop_talent_id == user_id)).all()
+            else:
+                services = completed_query.order_by(Finished_service_buyer.id.asc()).all()
         case _:
             return jsonify({
                 "status": -1,
@@ -88,6 +94,8 @@ def get_service_orders():
         service_title = service_pkg.name
         price = service_pkg.price
         amount = service.amount
+        create_time = service.create_time
+        order_id = service.order_id
 
         buyer_name = buyer_phone = talent_name = talent_phone = ""
         buyer = TpUser.query.get(service.buyer_id)
@@ -111,15 +119,23 @@ def get_service_orders():
             "buyer_phone": buyer_phone,
             "talent_name": talent_name,
             "talent_phone": talent_phone,
+            "create_time": create_time,
+            "order_id": order_id,
         }
         if identity == 1:
             res["cooperator_id"] = service.buyer_id
             res["cooperator_name"] = buyer_name
             res["cooperator_phone"] = buyer_phone
+            if buyer and user.user_id == buyer.user_id:
+                res["cooperator_name"] = talent_name
+                res["cooperator_phone"] = talent_phone
         elif identity == 2:
             res["cooperator_id"] = service.coop_talent_id
             res["cooperator_name"] = talent_name
             res["cooperator_phone"] = talent_phone
+            if talent and user.user_id == talent.user_id:
+                res["cooperator_name"] = buyer_name
+                res["cooperator_phone"] = buyer_phone
         orders.append(res)
     return jsonify({
         "status": 200,

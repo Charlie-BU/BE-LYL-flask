@@ -1,4 +1,5 @@
 # coding: utf-8
+import random
 import re
 from datetime import datetime
 
@@ -808,12 +809,21 @@ class Service_buyer(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     # 合作人才
     coop_talent_id = db.Column(db.Integer, nullable=True)
+    create_time = db.Column(db.DateTime, nullable=True, default=datetime.now)
 
     @property
     def coop_talent_name(self):
         if self.coop_talent_id:
             coop_talent = TpUser.query.get(self.coop_talent_id)
             return coop_talent.realname if coop_talent else ""
+        return ""
+
+    @property
+    def order_id(self):
+        if self.create_time:
+            time_str = self.create_time.strftime('%Y%m%d%H%M%S')
+            rand_part = str(random.randint(1000, 9999))
+            return f"{time_str[:5]}{rand_part}"
         return ""
 
     def to_json(self):
@@ -827,6 +837,8 @@ class Service_buyer(db.Model):
             "amount": self.amount,
             "coop_talent_id": self.coop_talent_id,
             "coop_talent_name": self.coop_talent_name,
+            "create_time": self.create_time,
+            "order_id": self.order_id,
         }
         return data
 
@@ -843,12 +855,21 @@ class Finished_service_buyer(db.Model):
     amount = db.Column(db.Integer, nullable=False)
     # 合作人才
     coop_talent_id = db.Column(db.Integer, nullable=True)
+    create_time = db.Column(db.DateTime, nullable=True, default=datetime.now)
 
     @property
     def coop_talent_name(self):
         if self.coop_talent_id:
             coop_talent = TpUser.query.get(self.coop_talent_id)
             return coop_talent.realname if coop_talent else ""
+        return ""
+
+    @property
+    def order_id(self):
+        if self.create_time:
+            time_str = self.create_time.strftime('%Y%m%d%H%M%S')
+            rand_part = str(random.randint(1000, 9999))
+            return f"{time_str[:5]}{rand_part}"
         return ""
 
     def to_json(self):
@@ -862,5 +883,7 @@ class Finished_service_buyer(db.Model):
             "amount": self.amount,
             "coop_talent_id": self.coop_talent_id,
             "coop_talent_name": self.coop_talent_name,
+            "create_time": self.create_time,
+            "order_id": self.order_id,
         }
         return data
