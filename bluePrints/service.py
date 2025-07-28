@@ -666,6 +666,39 @@ def confirm_cooperate():
         })
 
 
+@bp.route('/send_notification', methods=['POST'])
+def send_notification(description='有客户购买您的服务套餐，请尽快查看'):
+    data_request = request.json
+    sender_id = data_request['my_id']
+    receiver_id = data_request['receiver_id']
+    service_name = data_request['service_name']
+    template_id = "VPWt9pvTvCOWHtFBOQCo5mFmaalKwWmYDXk0l3sD2pQ"
+    sender = TpUser.query.get(sender_id)
+    data = {
+        "thing1": {  # 用人单位
+            "value": sender.firm_name if sender.firm_name else sender.nickname,
+        },
+        "thing2": {  # 工作标题
+            "value": service_name,
+        },
+        "thing3": {  # 温馨提示
+            "value": description,
+        },
+    }
+    res = inform(receiver_id, template_id, data)
+    if res == 200:
+        return jsonify({
+            "message": "success",
+            "status": 200,
+            "res_status": res,
+        })
+    return jsonify({
+        "message": "fail",
+        "status": -1,
+        "res_status": res,
+    })
+
+
 @bp.route("/finish_cooperate", methods=["POST"])
 def finish_cooperate():
     data = request.json
