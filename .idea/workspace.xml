@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="feat: service-images">
+    <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="fix: service-fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bluePrints/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/service.py" afterDir="false" />
     </list>
@@ -389,7 +389,14 @@
       <workItem from="1753611239823" duration="1492000" />
       <workItem from="1753620330888" duration="1959000" />
       <workItem from="1753670361830" duration="19000" />
-      <workItem from="1753670383096" duration="108000" />
+      <workItem from="1753670383096" duration="132000" />
+      <workItem from="1753688704064" duration="599000" />
+      <workItem from="1753775418076" duration="6000" />
+      <workItem from="1754017816232" duration="774000" />
+      <workItem from="1754018596024" duration="30000" />
+      <workItem from="1754061458848" duration="624000" />
+      <workItem from="1754062119858" duration="492000" />
+      <workItem from="1754062631616" duration="4000" />
     </task>
     <task id="LOCAL-00001" summary="chore">
       <option name="closed" value="true" />
@@ -775,7 +782,15 @@
       <option name="project" value="LOCAL" />
       <updated>1752855069365</updated>
     </task>
-    <option name="localTasksCounter" value="49" />
+    <task id="LOCAL-00049" summary="fix: service-fix">
+      <option name="closed" value="true" />
+      <created>1753670505663</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1753670505663</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -794,7 +809,8 @@
     <MESSAGE value="服务包6" />
     <MESSAGE value="bugfix" />
     <MESSAGE value="feat: service-images" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: service-images" />
+    <MESSAGE value="fix: service-fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: service-fix" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/BE_flask$BE_TJTT.coverage" NAME="BE-TJTT 覆盖结果" MODIFIED="1730274246694" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />

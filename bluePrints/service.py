@@ -108,6 +108,7 @@ def get_service_orders():
             talent_phone = talent.mobile
 
         res = {
+            "service_id": service.id,
             "profile_img": profile_img,
             "service_title": service_title,
             "price": price,
