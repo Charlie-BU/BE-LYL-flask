@@ -73,14 +73,21 @@ def get_service_orders():
             services = query.filter(Service_buyer.buyer_id.isnot(None),
                                     Service_buyer.coop_talent_id.isnot(None)).order_by(Service_buyer.id.asc()).all()
         case "completed":
-            completed_query = Finished_service_buyer.query.filter(Service_buyer.buyer_id.isnot(None),
-                                                                  Service_buyer.coop_talent_id.isnot(None))
+            completed_query = query.filter(Service_buyer.status == 2)
             if identity != 3:
                 services = completed_query.filter(
-                    or_(Finished_service_buyer.buyer_id == user_id,
-                        Finished_service_buyer.coop_talent_id == user_id)).all()
+                    or_(Service_buyer.buyer_id == user_id,
+                        Service_buyer.coop_talent_id == user_id)).order_by(Service_buyer.id.asc()).all()
             else:
-                services = completed_query.order_by(Finished_service_buyer.id.asc()).all()
+                services = completed_query.order_by(Service_buyer.id.asc()).all()
+        case "refunded":
+            completed_query = query.filter(Service_buyer.status == 3)
+            if identity != 3:
+                services = completed_query.filter(
+                    or_(Service_buyer.buyer_id == user_id,
+                        Service_buyer.coop_talent_id == user_id)).order_by(Service_buyer.id.asc()).all()
+            else:
+                services = completed_query.order_by(Service_buyer.id.asc()).all()
         case _:
             return jsonify({
                 "status": -1,
@@ -729,14 +736,7 @@ def finish_cooperate():
                 "status": -3,
                 "message": "该服务包尚未确认合作"
             })
-        finished_service_buyer = Finished_service_buyer(id=service_buyer.id,
-                                                        service_id=service_buyer.service_id,
-                                                        buyer_id=service_buyer.buyer_id,
-                                                        amount=service_buyer.amount,
-                                                        coop_talent_id=service_buyer.coop_talent_id,
-                                                        )
-        db.session.add(finished_service_buyer)
-        db.session.delete(service_buyer)
+        service_buyer.status = 2
         db.session.commit()
         return jsonify({
             'status': 200,

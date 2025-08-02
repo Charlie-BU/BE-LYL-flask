@@ -810,6 +810,8 @@ class Service_buyer(db.Model):
     # 合作人才
     coop_talent_id = db.Column(db.Integer, nullable=True)
     create_time = db.Column(db.DateTime, nullable=True, default=datetime.now)
+    # 状态：1待合作/合作中、2已完成、3已退款
+    status = db.Column(db.Integer, nullable=False, default=1)
 
     @property
     def coop_talent_name(self):
@@ -839,51 +841,6 @@ class Service_buyer(db.Model):
             "coop_talent_name": self.coop_talent_name,
             "create_time": self.create_time,
             "order_id": self.order_id,
-        }
-        return data
-
-
-# 完成的交易
-class Finished_service_buyer(db.Model):
-    __tablename__ = 'finished_service_buyer'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    service_id = db.Column(db.Integer, db.ForeignKey('service_pkg.id'))
-    service = db.relationship('ServicePkg', backref="finished_service_buyers")
-    buyer_id = db.Column(db.Integer, db.ForeignKey('tp_users.user_id'))
-    buyer = db.relationship('TpUser', backref="finished_service_buyers")
-    # 数量
-    amount = db.Column(db.Integer, nullable=False)
-    # 合作人才
-    coop_talent_id = db.Column(db.Integer, nullable=True)
-    create_time = db.Column(db.DateTime, nullable=True, default=datetime.now)
-
-    @property
-    def coop_talent_name(self):
-        if self.coop_talent_id:
-            coop_talent = TpUser.query.get(self.coop_talent_id)
-            return coop_talent.realname if coop_talent else ""
-        return ""
-
-    @property
-    def order_id(self):
-        if self.create_time:
-            time_str = self.create_time.strftime('%Y%m%d%H%M%S')
-            rand_part = str(random.randint(1000, 9999))
-            return f"{time_str[:5]}{rand_part}"
-        return ""
-
-    def to_json(self):
-        data = {
-            "id": self.id,
-            "service_id": self.service_id,
-            "service_name": self.service.name,
-            "buyer_id": self.buyer_id,
-            "buyer_firmname": self.buyer.firm_name if self.buyer else None,
-            "buyer_nickname": self.buyer.nickname if self.buyer else None,
-            "amount": self.amount,
-            "coop_talent_id": self.coop_talent_id,
-            "coop_talent_name": self.coop_talent_name,
-            "create_time": self.create_time,
-            "order_id": self.order_id,
+            "status": self.status,
         }
         return data
