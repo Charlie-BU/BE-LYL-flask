@@ -103,7 +103,6 @@ def get_service_orders():
         amount = service.amount
         create_time = service.create_time
         order_id = service.order_id
-
         buyer_name = buyer_phone = talent_name = talent_phone = ""
         buyer = TpUser.query.get(service.buyer_id)
         if buyer:
@@ -115,7 +114,7 @@ def get_service_orders():
             talent_phone = talent.mobile
 
         res = {
-            "service_id": service.id,
+            "service_buyer_id": service.id,
             "profile_img": profile_img,
             "service_title": service_title,
             "price": price,
@@ -129,6 +128,7 @@ def get_service_orders():
             "talent_phone": talent_phone,
             "create_time": create_time,
             "order_id": order_id,
+            "status": service.status,
         }
         if identity == 1:
             res["cooperator_id"] = service.buyer_id
@@ -848,3 +848,51 @@ def upload_image_to_OSS():
             "message": f"fail: {str(e)}",
             "status": -1,
         })
+
+
+@bp.route('/cancel_cooperation', methods=["POST"])
+def cancel_cooperation():
+    data = request.json
+    service_buyer_id = data["service_buyer_id"]
+    identity = data["identity"]
+    if int(identity) != 3:
+        return jsonify({
+            'status': -1,
+            'message': '权限不足'
+        })
+    order = Service_buyer.query.get(service_buyer_id)
+    if order.coop_talent_id is None:
+        return jsonify({
+            "status": -2,
+            "message": "该订单暂未合作"
+        })
+    order.coop_talent_id = None
+    order.status = 1
+    db.session.commit()
+    return jsonify({
+        'status': 200,
+        'message': '取消合作成功'
+    })
+
+@bp.route('/mark_refund', methods=["POST"])
+def mark_refund():
+    data = request.json
+    service_buyer_id = data["service_buyer_id"]
+    identity = data["identity"]
+    if int(identity) != 3:
+        return jsonify({
+            'status': -1,
+            'message': '权限不足'
+        })
+    order = Service_buyer.query.get(service_buyer_id)
+    if order.status == 3:
+        return jsonify({
+            "status": -2,
+            "message": "该订单已标记为已退款"
+        })
+    order.status = 3
+    db.session.commit()
+    return jsonify({
+        'status': 200,
+        'message': '取消合作成功'
+    })
