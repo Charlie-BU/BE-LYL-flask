@@ -53,11 +53,11 @@ def get_service_orders():
     user = TpUser.query.get(user_id)
     identity = data.get("identity")
     match identity:
-        case 1:
+        case 1:  # 人才方
             query = Service_buyer.query.filter(Service_buyer.coop_talent_id == user_id)
-        case 2:
+        case 2:  # 买家
             query = Service_buyer.query.filter(Service_buyer.buyer_id == user_id)
-        case 3:
+        case 3:  # 客服
             query = Service_buyer.query
         case _:
             return jsonify({
@@ -68,26 +68,15 @@ def get_service_orders():
         case "all":
             services = query.order_by(Service_buyer.id.desc()).all()
         case "pending":
-            services = query.filter(Service_buyer.coop_talent_id.is_(None)).order_by(Service_buyer.id.asc()).all()
+            services = query.filter(Service_buyer.status == 1, Service_buyer.coop_talent_id.is_(None)).order_by(Service_buyer.id.asc()).all()
         case "processing":
-            services = query.filter(Service_buyer.buyer_id.isnot(None),
+            services = query.filter(Service_buyer.status == 1,
+                                    Service_buyer.buyer_id.isnot(None),
                                     Service_buyer.coop_talent_id.isnot(None)).order_by(Service_buyer.id.asc()).all()
         case "completed":
-            completed_query = query.filter(Service_buyer.status == 2)
-            if identity != 3:
-                services = completed_query.filter(
-                    or_(Service_buyer.buyer_id == user_id,
-                        Service_buyer.coop_talent_id == user_id)).order_by(Service_buyer.id.asc()).all()
-            else:
-                services = completed_query.order_by(Service_buyer.id.asc()).all()
+            services = query.filter(Service_buyer.status == 2).order_by(Service_buyer.id.asc()).all()
         case "refunded":
-            completed_query = query.filter(Service_buyer.status == 3)
-            if identity != 3:
-                services = completed_query.filter(
-                    or_(Service_buyer.buyer_id == user_id,
-                        Service_buyer.coop_talent_id == user_id)).order_by(Service_buyer.id.asc()).all()
-            else:
-                services = completed_query.order_by(Service_buyer.id.asc()).all()
+            services = query.filter(Service_buyer.status == 3).order_by(Service_buyer.id.asc()).all()
         case _:
             return jsonify({
                 "status": -1,
@@ -873,6 +862,7 @@ def cancel_cooperation():
         'status': 200,
         'message': '取消合作成功'
     })
+
 
 @bp.route('/mark_refund', methods=["POST"])
 def mark_refund():
