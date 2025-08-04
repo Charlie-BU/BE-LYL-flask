@@ -118,6 +118,7 @@ def get_service_orders():
             "create_time": create_time,
             "order_id": order_id,
             "status": service.status,
+            "category_id": service_pkg.category_id,
         }
         if identity == 1:
             res["cooperator_id"] = service.buyer_id

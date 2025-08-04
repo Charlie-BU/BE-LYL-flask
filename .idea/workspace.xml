@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="chores">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/bluePrints/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -412,15 +411,7 @@
       <workItem from="1754105872952" duration="476000" />
       <workItem from="1754106358167" duration="19000" />
       <workItem from="1754106379978" duration="31000" />
-      <workItem from="1754281041739" duration="966000" />
-    </task>
-    <task id="LOCAL-00004" summary="chore">
-      <option name="closed" value="true" />
-      <created>1731761013571</created>
-      <option name="number" value="00004" />
-      <option name="presentableId" value="LOCAL-00004" />
-      <option name="project" value="LOCAL" />
-      <updated>1731761013571</updated>
+      <workItem from="1754281041739" duration="1639000" />
     </task>
     <task id="LOCAL-00005" summary="chore">
       <option name="closed" value="true" />
@@ -806,7 +797,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754106361937</updated>
     </task>
-    <option name="localTasksCounter" value="53" />
+    <task id="LOCAL-00053" summary="chores">
+      <option name="closed" value="true" />
+      <created>1754282025575</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1754282025575</updated>
+    </task>
+    <option name="localTasksCounter" value="54" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
