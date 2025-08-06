@@ -68,7 +68,8 @@ def get_service_orders():
         case "all":
             services = query.order_by(Service_buyer.id.desc()).all()
         case "pending":
-            services = query.filter(Service_buyer.status == 1, Service_buyer.coop_talent_id.is_(None)).order_by(Service_buyer.id.asc()).all()
+            services = query.filter(Service_buyer.status == 1, Service_buyer.coop_talent_id.is_(None)).order_by(
+                Service_buyer.id.asc()).all()
         case "processing":
             services = query.filter(Service_buyer.status == 1,
                                     Service_buyer.buyer_id.isnot(None),
@@ -538,7 +539,7 @@ def get_service_I_bought():
     data = request.get_json()
     my_id = data.get('my_id')
     try:
-        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id).all()
+        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).all()
         services = []
         for service_buyer in sevice_buyers:
             service = ServicePkg.query.get(service_buyer.service_id)
