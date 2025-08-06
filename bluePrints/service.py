@@ -539,7 +539,7 @@ def get_service_I_bought():
     data = request.get_json()
     my_id = data.get('my_id')
     try:
-        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).all()
+        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).order_by(Service_buyer.create_time.desc()).all()
         services = []
         for service_buyer in sevice_buyers:
             service = ServicePkg.query.get(service_buyer.service_id)

@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="chores">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bluePrints/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/service.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -201,11 +201,11 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Flask server.BE-TJTT" />
-      <item itemvalue="Flask server.Liyilian" />
       <item itemvalue="Python.BE-LYL-flask" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.user" />
+      <item itemvalue="Flask server.BE-TJTT" />
+      <item itemvalue="Flask server.Liyilian" />
     </list>
     <recent_temporary>
       <list>
@@ -413,6 +413,7 @@
       <workItem from="1754106379978" duration="31000" />
       <workItem from="1754281041739" duration="2264000" />
       <workItem from="1754445788799" duration="127000" />
+      <workItem from="1754457553237" duration="50000" />
     </task>
     <task id="LOCAL-00007" summary="chore">
       <option name="closed" value="true" />
