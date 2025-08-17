@@ -120,6 +120,7 @@ def get_service_orders():
             "order_id": order_id,
             "status": service.status,
             "category_id": service_pkg.category_id,
+            "out_trade_no": service.out_trade_no,
         }
         if identity == 1:
             res["cooperator_id"] = service.buyer_id
@@ -493,6 +494,28 @@ def create_pay():
     })
 
 
+@bp.route('/refund_order', methods=['POST'])
+def refund_order():
+    data = request.json
+    pay_data = {
+        'out_trade_no': data['out_trade_no'],
+        'total_fee': int(data['amount'] * 100),  # 金额，单位为分
+        'refund_fee': int(data['amount'] * 100),
+    }
+    wxpay = WxPay(pay_data)
+    refund_info = wxpay.get_refund_info()
+    if refund_info.get("return_code") == "SUCCESS":
+        return jsonify({
+            "status": 200,
+            "message": "退款成功"
+        })
+    print(refund_info.get("return_message"))
+    return jsonify({
+        "status": -1,
+        "message": refund_info.get("return_message")
+    })
+
+
 @bp.route("/buy_service", methods=["POST"])
 def buy_service():
     # 获取请求参数
@@ -500,6 +523,7 @@ def buy_service():
     service_id = data.get('service_id')
     buyer_id = data.get('buyer_id')
     amount = data.get('amount', 1)
+    out_trade_no = data.get('out_trade_no')
     # 参数验证
     if not service_id or not buyer_id:
         return jsonify({
@@ -519,7 +543,8 @@ def buy_service():
                 "status": -2,
                 "message": "未找到买方用户"
             })
-        service_buyer = Service_buyer(service_id=service_id, buyer_id=buyer_id, amount=amount)
+        service_buyer = Service_buyer(service_id=service_id, buyer_id=buyer_id, amount=amount,
+                                      out_trade_no=out_trade_no)
         db.session.add(service_buyer)
         db.session.commit()
         return jsonify({
@@ -539,7 +564,8 @@ def get_service_I_bought():
     data = request.get_json()
     my_id = data.get('my_id')
     try:
-        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).order_by(Service_buyer.create_time.desc()).all()
+        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).order_by(
+            Service_buyer.create_time.desc()).all()
         services = []
         for service_buyer in sevice_buyers:
             service = ServicePkg.query.get(service_buyer.service_id)

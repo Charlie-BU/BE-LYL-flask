@@ -39,7 +39,8 @@ class WxPay(object):
     """
 
     def __init__(self, pay_data):
-        self.url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
+        self.pay_url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
+        self.refund_url = 'https://api.mch.weixin.qq.com/secapi/pay/refund'
         self.appid = APPID  # 小程序ID
         self.mch_id = MCH_ID  # 商户号
         self.notify_url = NOTIFY_URL  # 通知地址
@@ -56,6 +57,21 @@ class WxPay(object):
         # md5签名
         sign = hashlib.md5(string_sign_temp).hexdigest()
         return sign.upper()
+
+    # 再次对返回的数据签名
+    def re_sign(self, post_data, prepay_id):
+        pay_sign_data = {
+            'appId': self.appid,  # 注意大小写与统一下单不一致
+            'timeStamp': post_data.get('out_trade_no'),
+            'nonceStr': post_data.get('nonce_str'),
+            'package': f'prepay_id={prepay_id}',
+            'signType': 'MD5',
+        }
+        pay_sign = self.create_sign(pay_sign_data)
+        pay_sign_data.pop('appId')
+        pay_sign_data['paySign'] = pay_sign
+        pay_sign_data['out_trade_no'] = post_data.get('out_trade_no')
+        return pay_sign_data
 
     # 支付统一下单
     def get_pay_info(self):
@@ -78,7 +94,7 @@ class WxPay(object):
         xml = dict_to_xml(post_data)
 
         # 统一下单接口请求
-        r = requests.post(self.url, data=xml.encode("utf-8"))
+        r = requests.post(self.pay_url, data=xml.encode("utf-8"))
         r.encoding = "utf-8"
         res = xml_to_dict(r.text)
         err_code_des = res.get('err_code_des')
@@ -90,16 +106,27 @@ class WxPay(object):
             return {'code': -1, 'msg': res.get('return_msg')}
         return self.re_sign(post_data, prepay_id)
 
-    # 再次对返回的数据签名
-    def re_sign(self, post_data, prepay_id):
-        pay_sign_data = {
-            'appId': self.appid,  # 注意大小写与统一下单不一致
-            'timeStamp': post_data.get('out_trade_no'),
-            'nonceStr': post_data.get('nonce_str'),
-            'package': f'prepay_id={prepay_id}',
-            'signType': 'MD5',
+    # 退款
+    def get_refund_info(self):
+        post_data = {
+            'appid': self.appid,  # 小程序ID
+            'mch_id': self.mch_id,  # 商户号
+            'nonce_str': get_nonce_str(),  # 随机字符串
+            'out_trade_no': self.pay_data.get("out_trade_no"),  # 商户订单号
+            'out_refund_no': str(int(time.time())),  # 商户退款单号
+            'total_fee': int(self.pay_data.get('total_fee')),  # 订单总金额，单位为分
+            'refund_fee': int(self.pay_data.get('refund_fee')),  # 退款金额，单位为分
         }
-        pay_sign = self.create_sign(pay_sign_data)
-        pay_sign_data.pop('appId')
-        pay_sign_data['paySign'] = pay_sign
-        return pay_sign_data
+        sign = self.create_sign(post_data)
+        post_data['sign'] = sign
+
+        xml = dict_to_xml(post_data)
+        # 退款请求
+        r = requests.post(self.refund_url, data=xml.encode("utf-8"))
+        r.encoding = "utf-8"
+        print("哈哈哈哈", r.text)
+        # res = xml_to_dict(r.text)
+        return {
+            'return_code': "res.get('return_code')",
+            'return_message': "res.get('return_message')",
+        }

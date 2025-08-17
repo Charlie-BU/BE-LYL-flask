@@ -812,6 +812,8 @@ class Service_buyer(db.Model):
     create_time = db.Column(db.DateTime, nullable=True, default=datetime.now)
     # 状态：1待合作/合作中、2已完成、3已退款
     status = db.Column(db.Integer, nullable=False, default=1)
+    # 商户订单号
+    out_trade_no = db.Column(db.Text, nullable=True)
 
     @property
     def coop_talent_name(self):
@@ -842,5 +844,6 @@ class Service_buyer(db.Model):
             "create_time": self.create_time,
             "order_id": self.order_id,
             "status": self.status,
+            "out_trade_no": self.out_trade_no,
         }
         return data
