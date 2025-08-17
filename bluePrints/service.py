@@ -69,15 +69,15 @@ def get_service_orders():
             services = query.order_by(Service_buyer.id.desc()).all()
         case "pending":
             services = query.filter(Service_buyer.status == 1, Service_buyer.coop_talent_id.is_(None)).order_by(
-                Service_buyer.id.asc()).all()
+                Service_buyer.id.desc()).all()
         case "processing":
             services = query.filter(Service_buyer.status == 1,
                                     Service_buyer.buyer_id.isnot(None),
-                                    Service_buyer.coop_talent_id.isnot(None)).order_by(Service_buyer.id.asc()).all()
+                                    Service_buyer.coop_talent_id.isnot(None)).order_by(Service_buyer.id.desc()).all()
         case "completed":
-            services = query.filter(Service_buyer.status == 2).order_by(Service_buyer.id.asc()).all()
+            services = query.filter(Service_buyer.status == 2).order_by(Service_buyer.id.desc()).all()
         case "refunded":
-            services = query.filter(Service_buyer.status == 3).order_by(Service_buyer.id.asc()).all()
+            services = query.filter(Service_buyer.status == 3).order_by(Service_buyer.id.desc()).all()
         case _:
             return jsonify({
                 "status": -1,
