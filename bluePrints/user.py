@@ -264,7 +264,6 @@ def upload_works():
         item_files.file7 = file_fields[6],
         item_files.file8 = file_fields[7],
         item_files.file9 = file_fields[8],
-        item_files.length = len(files)
     else:
         item_files = ItemFiles(
             id=item_id,
@@ -278,7 +277,6 @@ def upload_works():
             file7=file_fields[6],
             file8=file_fields[7],
             file9=file_fields[8],
-            length=len(files)
         )
         db.session.add(item_files)
     db.session.commit()

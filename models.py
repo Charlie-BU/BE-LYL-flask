@@ -261,7 +261,15 @@ class ItemFiles(db.Model):
     file7 = db.Column(db.Text, nullable=True)
     file8 = db.Column(db.Text, nullable=True)
     file9 = db.Column(db.Text, nullable=True)
-    length = db.Column(db.Integer, nullable=True)
+
+    @property
+    def length(self):
+        length = 0
+        for x in range(1, 10):
+            val = getattr(self, f"file{str(x)}", None)
+            if isinstance(val, str) and val.startswith("https"):
+                length += 1
+        return length
 
     def to_json(self):
         data = {
