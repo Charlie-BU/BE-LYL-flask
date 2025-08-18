@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="chores">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bluePrints/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wxpay.py" beforeDir="false" afterPath="$PROJECT_DIR$/wxpay.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,11 +201,11 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Flask server.BE-TJTT" />
+      <item itemvalue="Flask server.Liyilian" />
       <item itemvalue="Python.BE-LYL-flask" />
       <item itemvalue="Python.test" />
       <item itemvalue="Python.user" />
-      <item itemvalue="Flask server.BE-TJTT" />
-      <item itemvalue="Flask server.Liyilian" />
     </list>
     <recent_temporary>
       <list>
@@ -438,14 +437,7 @@
       <workItem from="1755524540640" duration="328000" />
       <workItem from="1755524872877" duration="89000" />
       <workItem from="1755524965930" duration="30000" />
-    </task>
-    <task id="LOCAL-00011" summary="chore">
-      <option name="closed" value="true" />
-      <created>1732796161995</created>
-      <option name="number" value="00011" />
-      <option name="presentableId" value="LOCAL-00011" />
-      <option name="project" value="LOCAL" />
-      <updated>1732796161995</updated>
+      <workItem from="1755525000010" duration="644000" />
     </task>
     <task id="LOCAL-00012" summary="chore">
       <option name="closed" value="true" />
@@ -831,7 +823,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755524704123</updated>
     </task>
-    <option name="localTasksCounter" value="60" />
+    <task id="LOCAL-00060" summary="chores">
+      <option name="closed" value="true" />
+      <created>1755526009895</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1755526009895</updated>
+    </task>
+    <option name="localTasksCounter" value="61" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

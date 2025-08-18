@@ -40,7 +40,7 @@ class WxPay(object):
 
     def __init__(self, pay_data):
         self.pay_url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
-        self.refund_url = 'https://api.mch.weixin.qq.com/secapi/pay/refund'
+        self.refund_url = 'https://api.mch.weixin.qq.com/v3/refund/domestic/refunds'
         self.appid = APPID  # 小程序ID
         self.mch_id = MCH_ID  # 商户号
         self.notify_url = NOTIFY_URL  # 通知地址
