@@ -549,7 +549,8 @@ def buy_service():
         db.session.commit()
         return jsonify({
             'status': 200,
-            'message': '服务包购买成功'
+            'message': '服务包购买成功',
+            'service_buyer_id': service_buyer.id
         })
     except Exception as e:
         db.session.rollback()
