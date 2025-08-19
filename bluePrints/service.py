@@ -510,7 +510,6 @@ def refund_order():
             "message": "退款成功",
             "refund_info": refund_info
         })
-    print(refund_info)
     return jsonify({
         "status": -1,
         "message": refund_info.get("err_code_des") if refund_info.get("err_code_des") else refund_info.get("return_message"),
