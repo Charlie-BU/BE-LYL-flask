@@ -40,7 +40,7 @@ class WxPay(object):
 
     def __init__(self, pay_data):
         self.pay_url = 'https://api.mch.weixin.qq.com/pay/unifiedorder'
-        self.refund_url = 'https://api.mch.weixin.qq.com/v3/refund/domestic/refunds'
+        self.refund_url = 'https://api.mch.weixin.qq.com/secapi/pay/refund'
         self.appid = APPID  # 小程序ID
         self.mch_id = MCH_ID  # 商户号
         self.notify_url = NOTIFY_URL  # 通知地址
@@ -122,11 +122,18 @@ class WxPay(object):
 
         xml = dict_to_xml(post_data)
         # 退款请求
-        r = requests.post(self.refund_url, data=xml.encode("utf-8"))
+        r = requests.post(
+            self.refund_url,
+            data=xml.encode("utf-8"),
+            cert=("./cert/apiclient_cert.pem", "./cert/apiclient_key.pem"),
+            headers={"Content-Type": "text/xml"}
+        )
         r.encoding = "utf-8"
-        print("哈哈哈哈", r.text)
-        # res = xml_to_dict(r.text)
-        return {
-            'return_code': "res.get('return_code')",
-            'return_message': "res.get('return_message')",
-        }
+        res = xml_to_dict(r.text)
+        # return {
+        #     'return_code': res.get('return_code'),
+        #     'return_message': res.get('return_msg'),
+        #     'result_code': res.get('result_code'),
+        #     'refund_id': res.get('refund_id')
+        # }
+        return res

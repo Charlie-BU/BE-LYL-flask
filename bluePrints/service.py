@@ -504,15 +504,16 @@ def refund_order():
     }
     wxpay = WxPay(pay_data)
     refund_info = wxpay.get_refund_info()
-    if refund_info.get("return_code") == "SUCCESS":
+    if refund_info.get("result_code") == "SUCCESS":
         return jsonify({
             "status": 200,
-            "message": "退款成功"
+            "message": "退款成功",
+            "refund_info": refund_info
         })
-    print(refund_info.get("return_message"))
+    print(refund_info)
     return jsonify({
         "status": -1,
-        "message": refund_info.get("return_message")
+        "message": refund_info.get("err_code_des") if refund_info.get("err_code_des") else refund_info.get("return_message"),
     })
 
 

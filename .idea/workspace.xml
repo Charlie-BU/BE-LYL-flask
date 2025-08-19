@@ -5,6 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c813184d-ddb1-41f6-8db7-a2d9c23def42" name="更改" comment="chores">
+      <change afterPath="$PROJECT_DIR$/cert/apiclient_cert.pem" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cert/apiclient_key.pem" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bluePrints/service.py" beforeDir="false" afterPath="$PROJECT_DIR$/bluePrints/service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wxpay.py" beforeDir="false" afterPath="$PROJECT_DIR$/wxpay.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -96,6 +100,11 @@
     ]
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/cert" />
+    </key>
+  </component>
   <component name="RunManager" selected="Flask server.Liyilian">
     <configuration name="BE-LYL-flask" type="PythonConfigurationType" factoryName="Python">
       <module name="BE-LYL-flask" />
@@ -438,14 +447,11 @@
       <workItem from="1755524872877" duration="89000" />
       <workItem from="1755524965930" duration="30000" />
       <workItem from="1755525000010" duration="644000" />
-    </task>
-    <task id="LOCAL-00012" summary="chore">
-      <option name="closed" value="true" />
-      <created>1732807989603</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1732807989603</updated>
+      <workItem from="1755526035996" duration="1210000" />
+      <workItem from="1755613508868" duration="73000" />
+      <workItem from="1755613587188" duration="448000" />
+      <workItem from="1755614042434" duration="114000" />
+      <workItem from="1755614159889" duration="1356000" />
     </task>
     <task id="LOCAL-00013" summary="chore">
       <option name="closed" value="true" />
@@ -831,7 +837,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755526009895</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="chores">
+      <option name="closed" value="true" />
+      <created>1755531383582</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1755531383582</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
