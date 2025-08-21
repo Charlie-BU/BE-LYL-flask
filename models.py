@@ -834,8 +834,10 @@ class Service_buyer(db.Model):
     def order_id(self):
         if self.create_time:
             time_str = self.create_time.strftime('%Y%m%d%H%M%S')
-            rand_part = str(random.randint(1000, 9999))
-            return f"{time_str[:5]}{rand_part}"
+            if self.out_trade_no:
+                return f"{time_str[:5]}{self.out_trade_no[5:]}"
+            else:
+                return f"{time_str[:7]}{self.id}"
         return ""
 
     def to_json(self):
