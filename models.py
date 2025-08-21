@@ -854,6 +854,6 @@ class Service_buyer(db.Model):
             "create_time": self.create_time,
             "order_id": self.order_id,
             "status": self.status,
-            "out_trade_no": self.out_trade_no,
+            "out_trade_no": self.out_trade_no
         }
         return data
