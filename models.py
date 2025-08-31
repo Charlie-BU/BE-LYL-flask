@@ -736,6 +736,7 @@ class ServicePkg(db.Model):
     intro_img = db.Column(db.Text)
     rule_img = db.Column(db.Text)
     images = db.Column(MutableList.as_mutable(JSON()), nullable=True, default=[])
+    is_deleted = db.Column(db.Boolean, default=False)
 
     @staticmethod
     def concatenate_features(features: list[str]) -> str:
@@ -759,6 +760,7 @@ class ServicePkg(db.Model):
             "intro_img": self.intro_img,
             "rule_img": self.rule_img,
             "images": self.images,
+            "is_deleted": self.is_deleted,
         }
         if self.service_talents:
             data["talents"] = [{

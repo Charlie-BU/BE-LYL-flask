@@ -35,7 +35,7 @@ def get_all_services():
     except Exception as e:
         category_id = None
     if category_id:
-        services = ServicePkg.query.filter(ServicePkg.category_id == category_id).all()
+        services = ServicePkg.query.filter(ServicePkg.category_id == category_id, ServicePkg.is_deleted == False).all()
     else:
         services = ServicePkg.query.all()
     services = [service.to_json() for service in services]
@@ -289,30 +289,33 @@ def delete_service():
                 "status": 404,
                 "message": "服务包不存在"
             })
-        prefix = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/'
-        try:
-            if service.profile_img:
-                bucket.delete_object(service.profile_img[len(prefix):])
-            if service.intro_img:
-                bucket.delete_object(service.intro_img[len(prefix):])
-            if service.rule_img:
-                bucket.delete_object(service.rule_img[len(prefix):])
-            if service.images and service.images != 0:
-                for image in service.images:
-                    try:
-                        bucket.delete_object(image[len(prefix):])
-                    except Exception:
-                        pass
-        except Exception:
-            pass
+        # prefix = f'https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT}/'
+        # try:
+        #     if service.profile_img:
+        #         bucket.delete_object(service.profile_img[len(prefix):])
+        #     if service.intro_img:
+        #         bucket.delete_object(service.intro_img[len(prefix):])
+        #     if service.rule_img:
+        #         bucket.delete_object(service.rule_img[len(prefix):])
+        #     if service.images and service.images != 0:
+        #         for image in service.images:
+        #             try:
+        #                 bucket.delete_object(image[len(prefix):])
+        #             except Exception:
+        #                 pass
+        # except Exception:
+        #     pass
+        #
+        # if service.service_talents:
+        #     for talent in service.service_talents:
+        #         db.session.delete(talent)
+        # if service.service_buyers:
+        #     for buyer in service.service_buyers:
+        #         db.session.delete(buyer)
+        # db.session.delete(service)
 
-        if service.service_talents:
-            for talent in service.service_talents:
-                db.session.delete(talent)
-        if service.service_buyers:
-            for buyer in service.service_buyers:
-                db.session.delete(buyer)
-        db.session.delete(service)
+        # 改为软删除
+        service.is_deleted = True
         db.session.commit()
 
         return jsonify({
@@ -499,8 +502,8 @@ def refund_order():
     data = request.json
     pay_data = {
         'out_trade_no': data['out_trade_no'],
-        'total_fee': int(data['amount'] * 100),  # 金额，单位为分
-        'refund_fee': int(data['amount'] * 100),
+        'total_fee': int(data['totalAmount'] * 100),  # 金额，单位为分
+        'refund_fee': int(data['refundAmount'] * 100),
     }
     wxpay = WxPay(pay_data)
     refund_info = wxpay.get_refund_info()
