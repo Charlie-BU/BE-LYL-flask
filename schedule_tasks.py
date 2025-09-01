@@ -60,7 +60,7 @@ def update_all_users_star():
     resumes_map = {resume.user_id: resume for resume in resumes}
     # 批量查询简历作品信息
     resume_ids = [resume.id for resume in resumes]
-    works = ItemFiles.query.filter(ItemFiles.id.in_(resume_ids)).all()
+    works = ItemFiles.query.filter(ItemFiles.item_id.in_(resume_ids)).all()
     works_map = {work.id: work for work in works}
 
     count = 0

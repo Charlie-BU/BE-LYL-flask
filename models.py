@@ -248,8 +248,9 @@ class TpItem(db.Model):
 
 class ItemFiles(db.Model):
     __tablename__ = 'item_files'
-    # 必须和item id保持一致
     id = db.Column(db.BigInteger, primary_key=True)
+    # 必须和item id保持一致
+    item_id = db.Column(db.BigInteger)
     # 必须和item type保持一致
     type = db.Column(db.Integer, nullable=True)
     file1 = db.Column(db.Text, nullable=True)
@@ -273,7 +274,7 @@ class ItemFiles(db.Model):
 
     def to_json(self):
         data = {
-            "id": self.id,
+            "id": self.item_id,
             "type": self.type,
             "file1": self.file1,
             "file2": self.file2,

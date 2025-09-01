@@ -162,11 +162,11 @@ def get_service_by_id():
             "service": service
         })
     except Exception as e:
-        print(e)
+        print("数据获取失败", e)
         db.session.rollback()
         return jsonify({
             "status": 500,
-            "message": "数据获取失败"
+            "message": f"数据获取失败：{e}"
         })
 
 
@@ -567,58 +567,58 @@ def buy_service():
 def get_service_I_bought():
     data = request.get_json()
     my_id = data.get('my_id')
-    try:
-        sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).order_by(
-            Service_buyer.create_time.desc()).all()
-        services = []
-        for service_buyer in sevice_buyers:
-            service = ServicePkg.query.get(service_buyer.service_id)
-            if service:
-                service_dict = service.to_json()
-                service_dict["amount"] = service_buyer.amount
-                # 必须携带service_buyer.id，否则当一人先后多个相同服务包则无法区分
-                service_dict["service_buyer_id"] = service_buyer.id
-                service_dict["coop_talent_id"] = service_buyer.coop_talent_id
+    # try:
+    sevice_buyers = Service_buyer.query.filter(Service_buyer.buyer_id == my_id, Service_buyer.status == 1).order_by(
+        Service_buyer.create_time.desc()).all()
+    services = []
+    for service_buyer in sevice_buyers:
+        service = ServicePkg.query.get(service_buyer.service_id)
+        if service:
+            service_dict = service.to_json()
+            service_dict["amount"] = service_buyer.amount
+            # 必须携带service_buyer.id，否则当一人先后多个相同服务包则无法区分
+            service_dict["service_buyer_id"] = service_buyer.id
+            service_dict["coop_talent_id"] = service_buyer.coop_talent_id
 
-                # 获取简历展示照片作为服务包展示照片
-                service_dict["images"] = []
-                service_talents = Service_talent.query.filter(
-                    Service_talent.service_id == service_buyer.service_id).all()
-                for service_talent in service_talents:
-                    talent_id = service_talent.talent_id
-                    his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2,
-                                                     TpItem.status == 3).first()
-                    if not his_resume:
-                        continue
-                    his_item_files = ItemFiles.query.get(his_resume.id)
-                    for i in range(9):
-                        if hasattr(his_item_files, f"file{i + 1}") and getattr(his_item_files,
-                                                                               f"file{i + 1}") and getattr(
-                            his_item_files, f"file{i + 1}").startswith("https"):
-                            service_dict["images"].append(getattr(his_item_files, f"file{i + 1}"))
+            # 获取简历展示照片作为服务包展示照片
+            service_dict["images"] = []
+            service_talents = Service_talent.query.filter(
+                Service_talent.service_id == service_buyer.service_id).all()
+            for service_talent in service_talents:
+                talent_id = service_talent.talent_id
+                his_resume = TpItem.query.filter(TpItem.user_id == talent_id, TpItem.type == 2,
+                                                 TpItem.status == 3).first()
+                if not his_resume:
+                    continue
+                his_item_files = ItemFiles.query.filter(ItemFiles.item_id == his_resume.id).first()
+                for i in range(9):
+                    if hasattr(his_item_files, f"file{i + 1}") and getattr(his_item_files,
+                                                                           f"file{i + 1}") and getattr(
+                        his_item_files, f"file{i + 1}").startswith("https"):
+                        service_dict["images"].append(getattr(his_item_files, f"file{i + 1}"))
 
-                # 若已确认合作，则只显示合作人才
-                if service_buyer.coop_talent_id:
-                    coop_talent = TpUser.query.get(service_buyer.coop_talent_id)
-                    service_dict["talents"] = [{
-                        "id": service_buyer.coop_talent_id,
-                        "name": coop_talent.realname,
-                        "phone": coop_talent.mobile,
-                        "star_as_elite": coop_talent.star_as_elite,
-                    }]
-                services.append(service_dict)
-        return jsonify({
-            "status": 200,
-            "services": services,
-            "message": "查询成功"
-        })
-    except Exception as e:
-        print(e)
-        db.session.rollback()
-        return jsonify({
-            "status": 500,
-            "message": "查询失败"
-        })
+            # 若已确认合作，则只显示合作人才
+            if service_buyer.coop_talent_id:
+                coop_talent = TpUser.query.get(service_buyer.coop_talent_id)
+                service_dict["talents"] = [{
+                    "id": service_buyer.coop_talent_id,
+                    "name": coop_talent.realname,
+                    "phone": coop_talent.mobile,
+                    "star_as_elite": coop_talent.star_as_elite,
+                }]
+            services.append(service_dict)
+    return jsonify({
+        "status": 200,
+        "services": services,
+        "message": "查询成功"
+    })
+    # except Exception as e:
+    #     print(e)
+    #     db.session.rollback()
+    #     return jsonify({
+    #         "status": 500,
+    #         "message": "查询失败"
+    #     })
 
 
 @bp.route("/get_his_resume_id", methods=["POST"])

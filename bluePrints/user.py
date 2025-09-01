@@ -130,7 +130,7 @@ def calc_star_as_elite():
             if getattr(resume, key, None):  # 如果resume中的字段有key不为None；若无key，则返回None
                 resume_score += 20
         # 拿到简历作品，有则加20
-        works = ItemFiles.query.get(resume.id)
+        works = ItemFiles.query.filter(ItemFiles.item_id == resume.id).first()
         if works and works.length > 0:
             resume_score += 20
     # INDEX2-用户活跃度
@@ -230,7 +230,7 @@ def get_item_id():
 def get_item_files():
     data = request.json
     item_id = data.get('item_id')
-    item_files = ItemFiles.query.get(item_id)
+    item_files = ItemFiles.query.filter(ItemFiles.item_id == item_id).first()
     if not item_files:
         return jsonify({
             "message": "fail",
@@ -252,7 +252,7 @@ def upload_works():
     files = data.get('files', [])
     # 动态填充 file1 到 file9，超出范围的设置为 None
     file_fields = [files[i] if i < len(files) else None for i in range(9)]
-    item_files = ItemFiles.query.get(item_id)
+    item_files = ItemFiles.query.filter(ItemFiles.item_id == item_id).first()
     if item_files:
         item_files.type = item_type
         item_files.file1 = file_fields[0],
@@ -267,6 +267,7 @@ def upload_works():
     else:
         item_files = ItemFiles(
             id=item_id,
+            item_id=item_id,
             type=item_type,
             file1=file_fields[0],
             file2=file_fields[1],
@@ -327,7 +328,7 @@ def delete_item():
     item_id = data.get('item_id')
     user_id = data.get('user_id')
     item = TpItem.query.get(item_id)
-    item_files = ItemFiles.query.get(item_id)
+    item_files = ItemFiles.query.filter(ItemFiles.item_id == item_id).first()
     if item:
         if item.user_id != user_id:
             return jsonify({
