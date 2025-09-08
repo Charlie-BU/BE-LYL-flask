@@ -273,19 +273,16 @@ class ItemFiles(db.Model):
         return length
 
     def to_json(self):
+        files = []
+        for x in range(1, 10):
+            val = getattr(self, f"file{str(x)}", None)
+            if isinstance(val, str) and val.startswith("https"):
+                files.append(val)
         data = {
             "id": self.item_id,
             "type": self.type,
-            "file1": self.file1,
-            "file2": self.file2,
-            "file3": self.file3,
-            "file4": self.file4,
-            "file5": self.file5,
-            "file6": self.file6,
-            "file7": self.file7,
-            "file8": self.file8,
-            "file9": self.file9,
-            "length": self.length,
+            "files": files,
+            "length": len(files),
         }
         return data
 
